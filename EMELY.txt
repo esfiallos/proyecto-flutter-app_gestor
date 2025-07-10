@@ -1,0 +1,49 @@
+SELECT * FROM SalesLT.Customer
+
+SELECT
+  CustomerID,
+  FirstName,
+  LastName,
+  Phone,
+  REPLACE(Phone, '-', '') AS PhoneSinGuiones
+FROM SalesLT.Customer
+WHERE CustomerID BETWEEN 1 AND 10
+
+
+SELECT
+  CustomerID,
+  FirstName,
+  LastName,
+  Phone,
+  REPLACE(Phone, '-', '') AS PhoneSinGuiones,
+  REPLACE(Phone, '-', '') + '100' PhoneSinGuionesSumadoForma1,
+  CAST(REPLACE(Phone, '-', '') AS bigint) + 100 PhoneSinGuionesSumadoForma2
+FROM SalesLT.Customer
+WHERE CustomerID BETWEEN 1 AND 10
+
+
+SELECT
+  CustomerID,
+  FirstName,
+  LastName,
+  Phone,
+  REPLACE(Phone, '-', '') AS PhoneSinGuiones,
+  REPLACE(Phone, '-', '') + '100' PhoneSinGuionesSumadoForma1,
+  CAST(REPLACE(Phone, '-', '') AS bigint) + 100 PhoneSinGuionesSumadoForma2Cast,
+  CONVERT(bigint, REPLACE(Phone, '-', '')) + 100 PhoneSinGuionesSumadoForma2Convert
+FROM SalesLT.Customer
+WHERE CustomerID BETWEEN 1 AND 10
+
+
+SELECT
+  SalesOrderID,
+  ProductID,
+  UnitPrice,
+  FORMAT(UnitPrice, 'N', 'en-us') AS UnitePriceFormatUS,
+  FORMAT(UnitPrice, 'N', 'es-hn') AS UnitePriceFormatHN,
+  FORMAT(UnitPrice, 'N', 'es-es') AS UnitePriceFormatES,
+  FORMAT(UnitPrice, 'C', 'en-us') AS UnitePriceFormatUSMoneda,
+  FORMAT(UnitPrice, 'C', 'es-hn') AS UnitePriceFormatHNMoneda,
+  FORMAT(UnitPrice, 'C', 'es-es') AS UnitePriceFormatESMoneda
+FROM
+  SalesLT.SalesOrderDetail
