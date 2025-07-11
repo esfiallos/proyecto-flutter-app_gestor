@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile.dart'; 
+import 'package:miki/statistics.dart';
 
 class menuPrincipal extends StatelessWidget {
   const menuPrincipal({super.key});
@@ -23,7 +24,11 @@ class menuPrincipal extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.bar_chart, color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, 
+                MaterialPageRoute(builder: (context) => const Statistics() ),
+                );
+              },
             ),
             const SizedBox(width: 40), 
             IconButton(
@@ -51,33 +56,28 @@ class menuPrincipal extends StatelessWidget {
                 width: double.infinity,
                 color: const Color(0xFF1B4CE0),
                 height: 100,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, left: 20.0),
+                      child: Text(
+                                    'Hola, Bienvenido!',
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold , color: Colors.white),
+                                  ),
+                    ),
+                  SizedBox(height: 5),
+                  Text(
+                              'Danerys Flores',
+                              style: TextStyle(fontSize: 16, color:Colors.white ),
+                            ),
+                  ],
+                ),
               ),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 10),
-
-                    Row(
-                      children: [
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Hola, Bienvenido!',
-                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Danerys Flores',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
 
                     const SizedBox(height: 20),
 
