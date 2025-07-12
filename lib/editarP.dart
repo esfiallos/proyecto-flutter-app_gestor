@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'actualizar.dart';
+import 'registrarP.dart';
+import 'seleccionarP.dart';
+
 
 class GestionInventarioPage extends StatefulWidget {
   const GestionInventarioPage({super.key});
@@ -42,11 +46,15 @@ class _GestionInventarioPageState extends State<GestionInventarioPage> {
           children: [
             ElevatedButton(
               onPressed: () {
-                
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RegistrarProductoPage()),
+              );
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               child: const Text('Registrar Productos'),
-            ),
+              ),
+
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
@@ -131,24 +139,30 @@ class _GestionInventarioPageState extends State<GestionInventarioPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      OutlinedButton(
-                        onPressed: () {
-                          
-                        },
-                        child: const Text("Actualizar Producto"),
-                      ),
-                      OutlinedButton(
-                        onPressed: () {
-                        
-                        },
-                        child: const Text("Editar Producto"),
-                      ),
-                    ],
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                  OutlinedButton(
+                  onPressed: () {
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProductSelectionScreen()),
+                  );
+                  },
+                  child: const Text("Actualizar Producto"),
                   ),
+                  OutlinedButton(
+                    onPressed: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CrearProductoScreen()),
+                  );
+                  },
+                  child: const Text("Editar Producto"),
+                  ),
+                  ],
+                ),
+
                 ],
               ),
             ),

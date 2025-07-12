@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'editarP.dart';
+import 'registrarP.dart';
+
 class InventarioPage extends StatelessWidget {
   const InventarioPage({super.key});
 
@@ -14,21 +17,26 @@ class InventarioPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Registrar Producto'),
-            ),
-          ),
+        
+        Padding(
+        padding: const EdgeInsets.all(16),
+        child: ElevatedButton(
+        onPressed: () {
+        Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const RegistrarProductoPage()),
+      );
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.blue,
+      minimumSize: const Size.fromHeight(50),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+    child: const Text('Registrar Producto'),
+  ),
+),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -125,16 +133,25 @@ class InventarioPage extends StatelessWidget {
                     children: [
                       // Información del producto
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text('Nombre Producto', style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 4),
-                            Text('Stock: 10'),
-                            Text('Precio: L25'),
-                          ],
-                        ),
-                      ),
+                      child: GestureDetector(
+                      onTap: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const GestionInventarioPage()),
+                  );
+                  },
+                  child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                  Text('Nombre Producto', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text('Stock: 10'),
+                  Text('Precio: L25'),
+                  ],
+                  ),
+                  ),
+                  ),
+
                       // Icono de imagen
                       const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
                     ],

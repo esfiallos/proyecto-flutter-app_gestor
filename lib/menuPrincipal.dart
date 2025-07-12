@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:miki/inventario.dart';
 import 'profile.dart'; 
+
 
 class menuPrincipal extends StatelessWidget {
   const menuPrincipal({super.key});
@@ -27,9 +29,14 @@ class menuPrincipal extends StatelessWidget {
             ),
             const SizedBox(width: 40), 
             IconButton(
-              icon: const Icon(Icons.layers, color: Colors.white),
-              onPressed: () {},
-            ),
+            icon: const Icon(Icons.layers, color: Colors.white),
+            onPressed: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const InventarioPage()),
+            );
+          },
+          ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.white),
               onPressed: () {
