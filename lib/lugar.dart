@@ -60,6 +60,8 @@ class lugar extends StatelessWidget {
                             MaterialPageRoute(builder: (context) => const bienvenida()),
                           );
                         },
+
+                        
                       ),
                       const SizedBox(width: 8),
                       const Text(

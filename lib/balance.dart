@@ -6,20 +6,20 @@ class Balance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-    const String totalBalance = '\L.2,187.00';
-    const String ingresosAmount = '\L.4,000.00';
-    const String egresosAmount = '\L.1,187.00';
+    const String totalBalance = 'L.2,187.00';
+    const String ingresosAmount = 'L.4,000.00';
+    const String egresosAmount = 'L.1,187.00';
 
     
     final List<Map<String, dynamic>> ingresosSummary = [
-      {'label': 'Total De Ventas', 'value': '\L.4,000.00', 'color': Colors.black87},
-      {'label': 'Efectivo', 'value': '\L.1,000.00', 'color': Colors.blue},
-      {'label': 'Otros Metodos De Pago', 'value': '\L.3,000.00', 'color': Colors.blue},
+      {'label': 'Total De Ventas', 'value': 'L.4,000.00', 'color': Colors.black87},
+      {'label': 'Efectivo', 'value': 'L.1,000.00', 'color': Colors.blue},
+      {'label': 'Otros Metodos De Pago', 'value': 'L.3,000.00', 'color': Colors.blue},
     ];
 
     final List<Map<String, dynamic>> egresosSummary = [
-      {'label': 'Efectivo', 'value': '-\L.594,00', 'color': Colors.red},
-      {'label': 'Otros Medios', 'value': '-\L.593,00', 'color': Colors.red},
+      {'label': 'Efectivo', 'value': '-L.594,00', 'color': Colors.red},
+      {'label': 'Otros Medios', 'value': '-L.593,00', 'color': Colors.red},
     ];
 
     return Scaffold(
@@ -118,7 +118,7 @@ class Balance extends StatelessWidget {
                   const Divider(height: 25, thickness: 1, color: Colors.grey),
                   
                   ...ingresosSummary.map((item) =>
-                      _buildSummaryRow(item['label']!, item['value']!, item['color']!)).toList(),
+                      _buildSummaryRow(item['label']!, item['value']!, item['color']!)),
                   const SizedBox(height: 20),
 
                   
@@ -133,7 +133,7 @@ class Balance extends StatelessWidget {
                   const Divider(height: 25, thickness: 1, color: Colors.grey),
                   
                   ...egresosSummary.map((item) =>
-                      _buildSummaryRow(item['label']!, item['value']!, item['color']!)).toList(),
+                      _buildSummaryRow(item['label']!, item['value']!, item['color']!)),
                 ],
               ),
             ),

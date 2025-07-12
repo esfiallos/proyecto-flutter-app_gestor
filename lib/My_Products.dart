@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:miki/product_card.dart';
 
 
-class My_Products extends StatelessWidget {
-  const My_Products({super.key});
+class MyProducts extends StatelessWidget {
+  const MyProducts({super.key});
 
   @override
   Widget build(BuildContext context) {
