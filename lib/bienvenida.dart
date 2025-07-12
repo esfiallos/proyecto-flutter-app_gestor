@@ -42,7 +42,6 @@ class bienvenida extends StatelessWidget {
                 children: [
                   const SizedBox(height: 40),
 
-                  // Imagen
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Image.asset(
@@ -54,7 +53,7 @@ class bienvenida extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  // Texto
+              
                   const Text(
                     'BIENVENIDO A',
                     style: TextStyle(

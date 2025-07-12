@@ -13,7 +13,7 @@ void main() {
   runApp(const MyApp());
 }
 
-//  App principal
+/// 🌐 App principal
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -25,13 +25,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      // 👇 Cambia la pantalla inicial si estás en modo desarrollo
+      //  Cambia la pantalla inicial si estás en modo desarrollo
       home: devMode ? const Playground() : const bienvenida(),
     );
   }
 }
 
-//  Pantalla de pruebas
+/// 🧪 Pantalla de pruebas
 class Playground extends StatelessWidget {
   const Playground({super.key});
 

@@ -11,6 +11,8 @@ class Product {
 
 
 class ConfirmarCantidadesPage extends StatefulWidget {
+  const ConfirmarCantidadesPage({super.key});
+
   @override
   State<ConfirmarCantidadesPage> createState() => _ConfirmarCantidadesPageState();
 }
@@ -136,7 +138,7 @@ class _ConfirmarCantidadesPageState extends State<ConfirmarCantidadesPage> {
                     Spacer(),
                     Text("Precio:", style: TextStyle(fontSize: 14)),
                     SizedBox(width: 8),
-                    Container(
+                    SizedBox(
                       width: 90,
                       height: 40,
                       child: TextField(
