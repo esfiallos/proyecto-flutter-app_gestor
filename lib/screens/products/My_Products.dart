@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miki/product_card.dart';
+import 'package:miki/widgets/product_card.dart';
 
 
 class MyProducts extends StatelessWidget {

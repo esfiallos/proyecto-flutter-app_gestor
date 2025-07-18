@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'actualizar.dart';
-import 'registrarP.dart';
-import 'seleccionarP.dart';
+import '../products/actualizar.dart';
+import '../products/registrarP.dart';
+import '../products/seleccionarP.dart';
 
 
 class GestionInventarioPage extends StatefulWidget {

@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'editarP.dart';
-import 'inventario.dart';
+import '../inventario/GestionInventarioPage.dart';
+import '../inventario/inventario.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Formulario Producto',
-      debugShowCheckedModeBanner: false,
-      home: const CrearProductoScreen(),
-    );
-  }
-}
 
 class CrearProductoScreen extends StatefulWidget {
   const CrearProductoScreen({super.key});

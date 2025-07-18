@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:miki/screens/auth/bienvenida.dart'; 
 
-// ignore: camel_case_types
-class inicio extends StatelessWidget {
-  const inicio({super.key});
+class Inicio extends StatefulWidget {
+  const Inicio({super.key});
+
+  @override
+  State<Inicio> createState() => _InicioState();
+}
+
+class _InicioState extends State<Inicio> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Espera 10 segundos y navega a la pantalla de bienvenida
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) {
+          Navigator.pushReplacementNamed(context, '/bienvenida');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +32,6 @@ class inicio extends StatelessWidget {
             left: -100,
             child: _circle(220, Colors.purple),
           ),
-
           Positioned(
             top: -80,
             right: -80,
@@ -26,7 +42,6 @@ class inicio extends StatelessWidget {
             right: -20,
             child: _circle(60, Colors.pink),
           ),
-
           Positioned(
             bottom: -10,
             left: -20,
@@ -37,29 +52,20 @@ class inicio extends StatelessWidget {
             left: 20,
             child: _circle(160, Colors.purple),
           ),
-
           Positioned(
             bottom: -60,
             right: -60,
             child: _circle(150, Colors.blue),
           ),
 
-          
+          // Logo centrado
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
+                SizedBox(
                   height: 180,
                   width: 180,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.blue, Colors.purple],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Image.asset(
@@ -69,11 +75,11 @@ class inicio extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(
                     colors: [Colors.blue, Colors.purple, Colors.pink],
                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+                  blendMode: BlendMode.srcIn,
                 ),
               ],
             ),
@@ -88,7 +94,7 @@ class inicio extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.7),
+        color: color.withAlpha(10),
         shape: BoxShape.circle,
       ),
     );

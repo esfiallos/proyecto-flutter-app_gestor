@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:miki/lugar.dart';
+import 'package:miki/screens/auth/lugar.dart';
 
-
-class bienvenida extends StatelessWidget {
-  const bienvenida({super.key});
+class Bienvenida extends StatelessWidget {
+  const Bienvenida({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +35,11 @@ class bienvenida extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox.expand( 
+            SizedBox.expand(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Image.asset(
@@ -50,10 +48,7 @@ class bienvenida extends StatelessWidget {
                       fit: BoxFit.contain,
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-              
                   const Text(
                     'BIENVENIDO A',
                     style: TextStyle(
@@ -70,56 +65,35 @@ class bienvenida extends StatelessWidget {
                       color: Color(0xFF8B3DFF),
                     ),
                   ),
-
                   const SizedBox(height: 30),
-
                   const Text(
-                    'De que pais nos visitas?',
+                    '¿De qué país nos visitas?',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black87,
                     ),
                   ),
-
                   const SizedBox(height: 20),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Icono
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(40),
-                              ),
-                              child: const Icon(
-                                Icons.location_on_outlined,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'País',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurpleAccent,
+                        minimumSize: const Size.fromHeight(50), // Ocupa todo el ancho
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                    
-                        IconButton(
-                          icon: const Icon(Icons.arrow_forward, color: Colors.black),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const lugar()),
-                            );
-                          },
-                        ),
-                      ],
+                        elevation: 4,
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/lugar');
+                      },
+                      icon: const Icon(Icons.location_on_outlined, color: Colors.white),
+                      label: const Text(
+                        'Elegir país',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -131,5 +105,3 @@ class bienvenida extends StatelessWidget {
     );
   }
 }
-
-

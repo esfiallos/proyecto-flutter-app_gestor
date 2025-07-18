@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-
-
-class Product {
-  final String nombre;
-  int cantidad;
-  String precio;
-
-  Product({required this.nombre, this.cantidad = 0, this.precio = '10'});
-}
+import 'package:miki/models/Product.dart';
 
 
 class ConfirmarCantidadesPage extends StatefulWidget {

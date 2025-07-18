@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'login.dart'; 
 
-class creacionCuenta extends StatelessWidget {
-  const creacionCuenta({super.key});
+
+class CreacionCuenta extends StatelessWidget {
+  const CreacionCuenta({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,17 +99,6 @@ class creacionCuenta extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      _buildLabel("WHATSAPP"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
-
-                      _buildLabel("INSTAGRAM"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
 
                       _buildLabel("CONTRASEÑA"),
                       TextField(
@@ -128,10 +117,7 @@ class creacionCuenta extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const login()),
-                            );
+                            Navigator.pushReplacementNamed(context, '/login');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF007BFF),

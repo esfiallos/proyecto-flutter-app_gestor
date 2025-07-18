@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'buscarCorreo.dart';
 import 'creacionCuenta.dart';
-import 'menuPrincipal.dart';
+import '../home/menuPrincipal.dart';
 
-class login extends StatelessWidget {
-  const login({super.key});
+class Login extends StatelessWidget {
+  const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +94,8 @@ class login extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const buscarCorreo()),
-                        );
+                        Navigator.pushNamed(context, '/buscar-correo');
+
                       },
                       child: const Text(
                         "Haz olvidado tu contraseña?",
@@ -115,10 +113,7 @@ class login extends StatelessWidget {
                       ),
                       onPressed: () {
                         // Ir al menú principal
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const menuPrincipal()),
-                        );
+                        Navigator.pushReplacementNamed(context, '/');
                       },
                       child: const Text("Iniciar"),
                     ),
@@ -126,10 +121,7 @@ class login extends StatelessWidget {
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const creacionCuenta()),
-                      );
+                      Navigator.pushReplacementNamed(context, '/crear-cuenta');
                     },
                     child: const Text(
                       "¿No tienes una cuenta?",

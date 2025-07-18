@@ -77,6 +77,10 @@ flutter:
     - assets/venta.png
     - assets/gasto.png
     - assets/inventario.png
+    - assets/argentina.png
+    - assets/colombia.png
+    - assets/peru.png
+    - assets/mexico.png
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

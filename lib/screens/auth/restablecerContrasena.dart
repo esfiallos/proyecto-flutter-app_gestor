@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'restablecerContrasena.dart';
+import 'package:miki/routes/app_routes.dart';
 
-class buscarCorreo extends StatelessWidget {
-  const buscarCorreo({super.key});
+class RestablecerContrasena extends StatelessWidget {
+  const RestablecerContrasena({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,9 +11,7 @@ class buscarCorreo extends StatelessWidget {
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
+          decoration: const BoxDecoration(color: Colors.white),
           child: Stack(
             children: [
               Positioned(
@@ -44,60 +42,106 @@ class buscarCorreo extends StatelessWidget {
 
               SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 36,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 40),
+
                       Center(
                         child: ShaderMask(
                           shaderCallback: (bounds) => const LinearGradient(
-                            colors: [
-                              Color(0xFF007BFF),
-                              Color(0xFF8A2BE2),
-                            ],
+                            colors: [Color(0xFF007BFF), Color(0xFF8A2BE2)],
                           ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
                           child: const Text(
-                            'Buscar Correo',
+                            'Restablecer\ncontraseña',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 32,
+                              fontSize: 29,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 24),
+
                       Center(
                         child: Image.asset(
-                          'assets/BuscarCorreo.jpg',
-                          height: 300,
+                          'assets/restablerContra.jpg',
+                          height: 220,
                         ),
                       ),
-                      const SizedBox(height: 40),
+
+                      const SizedBox(height: 30),
+
                       const Text(
-                        "Escriba su correo",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        "Restablecer contraseña",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      const TextField(
+
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        "CONTRASEÑA",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        obscureText: true,
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.visibility_off),
+                            onPressed: () {},
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        "CONFIRMAR CONTRASEÑA",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.visibility_off),
+                            onPressed: () {},
+                          ),
                         ),
                       ),
                       const SizedBox(height: 40),
+
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const restablecerContrasena()),
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              AppRoutes
+                                  .login, // Usando el nombre de ruta que definiste
+                              (route) =>
+                                  false, 
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF007BFF),
+                            backgroundColor: const Color(0xFF007BFF),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           child: const Text(
@@ -109,6 +153,7 @@ class buscarCorreo extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 30),
                     ],
                   ),

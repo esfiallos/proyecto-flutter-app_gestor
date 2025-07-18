@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
 
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Seleccionar Producto',
-      debugShowCheckedModeBanner: false,
-      home: const ProductSelectionScreen(),
-    );
-  }
-}
-
 class ProductSelectionScreen extends StatefulWidget {
   const ProductSelectionScreen({super.key});
 
