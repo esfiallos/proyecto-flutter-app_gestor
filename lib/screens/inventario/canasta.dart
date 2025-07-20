@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miki/models/Product.dart';
+import 'package:miki/models/product.dart';
 
 
 class ConfirmarCantidadesPage extends StatefulWidget {

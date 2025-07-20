@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:miki/screens/auth/lugar.dart';
 
 class Bienvenida extends StatelessWidget {
   const Bienvenida({super.key});

@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:miki/screens/auth/bienvenida.dart'; 
+import 'package:flutter/material.dart'; 
 
 class Inicio extends StatefulWidget {
   const Inicio({super.key});

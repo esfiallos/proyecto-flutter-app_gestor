@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'restablecerContrasena.dart';
 
 class BuscarCorreo extends StatelessWidget {
   const BuscarCorreo({super.key});
