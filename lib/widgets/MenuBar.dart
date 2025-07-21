@@ -36,7 +36,7 @@ class MenuBarraAbajo extends StatelessWidget {
         BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
         BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: ''),
         BottomNavigationBarItem(icon: Icon(Icons.inventory), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.inventory_2), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: ''),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
       ],
     );

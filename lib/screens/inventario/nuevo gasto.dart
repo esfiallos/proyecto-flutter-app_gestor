@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class NuevoGasto extends StatefulWidget {
   const NuevoGasto({super.key});
 
@@ -40,17 +39,25 @@ class _NuevoGastoState extends State<NuevoGasto> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Nombre del Gasto", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              "Nombre del Gasto",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             TextField(
               controller: nombreController,
               decoration: InputDecoration(border: OutlineInputBorder()),
             ),
             SizedBox(height: 16),
 
-            Text("Categoría del Gasto", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              "Categoría del Gasto",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             DropdownButtonFormField<String>(
               value: categoriaSeleccionada,
-              items: categorias.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
+              items: categorias
+                  .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
+                  .toList(),
               onChanged: (val) => setState(() => categoriaSeleccionada = val),
               decoration: InputDecoration(border: OutlineInputBorder()),
             ),
@@ -59,8 +66,11 @@ class _NuevoGastoState extends State<NuevoGasto> {
             Text("Subcategoría", style: TextStyle(fontWeight: FontWeight.bold)),
             DropdownButtonFormField<String>(
               value: subcategoriaSeleccionada,
-              items: subcategorias.map((sub) => DropdownMenuItem(value: sub, child: Text(sub))).toList(),
-              onChanged: (val) => setState(() => subcategoriaSeleccionada = val),
+              items: subcategorias
+                  .map((sub) => DropdownMenuItem(value: sub, child: Text(sub)))
+                  .toList(),
+              onChanged: (val) =>
+                  setState(() => subcategoriaSeleccionada = val),
               decoration: InputDecoration(border: OutlineInputBorder()),
             ),
             SizedBox(height: 16),
@@ -76,17 +86,26 @@ class _NuevoGastoState extends State<NuevoGasto> {
             ),
             SizedBox(height: 16),
 
-            Text("Método de Pago", style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Text(
+              "Método de Pago",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: metodosPago.map((m) {
                 return ChoiceChip(
                   label: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(m == 'Efectivo' ? Icons.money :
-                           m == 'Tarjeta' ? Icons.credit_card :
-                           Icons.account_balance),
-                      SizedBox(width: 4),
+                      Icon(
+                        m == 'Efectivo'
+                            ? Icons.money
+                            : m == 'Tarjeta'
+                            ? Icons.credit_card
+                            : Icons.account_balance,
+                      ),
+                      SizedBox(width: 2),
                       Text(m),
                     ],
                   ),
@@ -111,7 +130,10 @@ class _NuevoGastoState extends State<NuevoGasto> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => GastoConfirmado(valor: valorController.text)),
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          GastoConfirmado(valor: valorController.text),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -143,7 +165,11 @@ class GastoConfirmado extends StatelessWidget {
               SizedBox(height: 16),
               Text(
                 "!Creaste un Gasto!",
-                style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 12),
