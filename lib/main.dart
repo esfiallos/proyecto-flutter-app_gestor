@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:miki/screens/auth/bienvenida.dart';
 import 'package:miki/screens/products/My_Products.dart';
 import 'package:miki/screens/home/menuPrincipal.dart';
@@ -22,57 +21,13 @@ import 'package:miki/screens/estadistica/balance.dart';
 import 'package:miki/screens/auth/lugar.dart';
 import 'package:miki/screens/inventario/nuevo gasto.dart';
 import 'package:miki/routes/app_routes.dart';
-import 'package:provider/provider.dart';
 
-
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
-
-
-Future<Database> openLocalDatabase() async {
-  final databasePath = await getDatabasesPath();
-  final path = join(databasePath, 'miki_app.db');
-  return openDatabase(
-    path,
-    version: 1,
-    onCreate: (db, version) async {
-      final sqlScript = await rootBundle.loadString('assets/db/base_miki.sql');
-       final inserciones = await rootBundle.loadString('assets/db/consulta_datos.sql');
-      final commands = sqlScript.split(';');
-
-      final comands2 = inserciones.split(';');
-
-      for (var command in commands) {
-        final trimmed = command.trim();
-        if (trimmed.isNotEmpty) {
-          await db.execute(trimmed);
-        }
-      }
-
-      for (var command in comands2) {
-        final trimmed = command.trim();
-        if (trimmed.isNotEmpty) {
-          await db.execute(trimmed);
-        }
-      }
-    },
-  );
-}
 
 const bool devMode = true; // Cambia a false para producción
 
 void main() async {
-  
-  WidgetsFlutterBinding.ensureInitialized();
-  final database = await openLocalDatabase();
 
-    runApp(
-    Provider<Database>.value(
-      value: database,
-      child: const MyApp(),
-    ),
-  );
+    runApp( const MyApp(),);
 }
 
 
