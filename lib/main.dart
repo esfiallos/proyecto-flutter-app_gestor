@@ -27,9 +27,6 @@ import 'package:sqflite/sqflite.dart';
 
 
 
-
-const bool devMode = true; // Cambia a false para producción
-
 void main() async {
  WidgetsFlutterBinding.ensureInitialized();
 
@@ -43,7 +40,6 @@ void main() async {
       child: const MyApp(),
     ),
   );
-}
 
 
 class MyApp extends StatelessWidget {
@@ -57,97 +53,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: devMode ? AppRoutes.playground : AppRoutes.inicio,
+      initialRoute: AppRoutes.inicio,
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }
-}
-
-class Playground extends StatelessWidget {
-  const Playground({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Pantallas de Prueba"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            tooltip: 'Ir al flujo real',
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const Inicio()),
-              );
-            },
-          ),
-        ],
-      ),
-            body: ListView(
-  children: [
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Home", style: TextStyle(fontWeight: FontWeight.bold)),
-    ),
-    _buildTile(context, "Pantalla Principal", const menuPrincipal()),
-    _buildTile(context, "Inicio", const Inicio()),
-    _buildTile(context, "Bienvenida", const Bienvenida()),
-    _buildTile(context, "Buscar Correo", const BuscarCorreo()),
-    _buildTile(context, "Actualizar", const CrearProductoScreen()),
-    _buildTile(context, "Lugar", const Lugar()),
-
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Auth", style: TextStyle(fontWeight: FontWeight.bold)),
-    ),
-    _buildTile(context, "Login", const Login()),
-    _buildTile(context, "Crear Cuenta", const CreacionCuenta()),
-    _buildTile(context, "Restablecer Contraseña", const RestablecerContrasena()),
-    _buildTile(context, "Cerrar sesión", const LogOut()),
-
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Perfil", style: TextStyle(fontWeight: FontWeight.bold)),
-    ),
-    _buildTile(context, "Perfil", const Profile()),
-    _buildTile(context, "Editar Perfil", const EditProfile()),
-
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Productos", style: TextStyle(fontWeight: FontWeight.bold)),
-    ),
-    _buildTile(context, "Mis Productos", const MyProducts()),
-    _buildTile(context, "Registrar Producto", const RegistrarProductoPage()),
-    _buildTile(context, "Editar Producto", const GestionInventarioPage()),
-    _buildTile(context, "Seleccionar Producto", const ProductSelectionScreen()),
-
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Inventario", style: TextStyle(fontWeight: FontWeight.bold)),
-    ),
-    _buildTile(context, "Inventario", const InventarioPage()),
-    _buildTile(context, "Canasta", const ConfirmarCantidadesPage()),
-     _buildTile(context, "Nuevo Gasto",  NuevoGasto()),
-
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Estadísticas", style: TextStyle(fontWeight: FontWeight.bold)),
-    ),
-        _buildTile(context, "Estadísticas", const Statistics()),
-        _buildTile(context, "Balance", const Balance()),
-  ],
-),
-    );
-  }
-}
-
-Widget _buildTile(BuildContext context, String title, Widget screen) {
-  return ListTile(
-    title: Text(title),
-    onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => screen),
-    ),
-  );
 }

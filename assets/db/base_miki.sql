@@ -1,6 +1,4 @@
--- ====================
 -- TABLAS PRINCIPALES
--- ====================
 
 CREATE TABLE Usuarios (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,18 +61,18 @@ CREATE TABLE Gastos (
     FOREIGN KEY (id_producto) REFERENCES Productos(id_producto)
 );
 
--- ====================
 -- TRIGGERS INVENTARIO
--- ====================
 
-CREATE TRIGGER descontar_stock AFTER INSERT ON DetalleVenta
+CREATE TRIGGER descontar_stock 
+AFTER INSERT ON DetalleVenta
 BEGIN
     UPDATE Productos
     SET stock = stock - NEW.cantidad
     WHERE id_producto = NEW.id_producto;
 END;
 
-CREATE TRIGGER reponer_stock AFTER INSERT ON Gastos
+CREATE TRIGGER reponer_stock 
+AFTER INSERT ON Gastos
 WHEN NEW.id_producto IS NOT NULL
 BEGIN
     UPDATE Productos
@@ -82,9 +80,7 @@ BEGIN
     WHERE id_producto = NEW.id_producto;
 END;
 
--- ====================
--- VIEWS
--- ====================
+-- VISTAS
 
 CREATE VIEW View_BalanceGeneral AS
 SELECT
@@ -99,8 +95,7 @@ SELECT
             SELECT SUM(p.precio * dv.cantidad)
             FROM DetalleVenta dv
             JOIN Productos p ON dv.id_producto = p.id_producto
-        ), 0) -
-        IFNULL((SELECT SUM(valor) FROM Gastos), 0)
+        ), 0) - IFNULL((SELECT SUM(valor) FROM Gastos), 0)
     ) AS balance;
 
 CREATE VIEW View_VentasPorMetodoPago AS
