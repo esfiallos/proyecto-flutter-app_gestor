@@ -45,7 +45,7 @@ class AppRoutes {
   static const String categorias = '/categorias';
 
 
-  static const String playground = '/playground';
+
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -59,8 +59,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const MyProducts());
       case perfil:
         return MaterialPageRoute(builder: (_) => const Profile());
-      case playground:
-        return MaterialPageRoute(builder: (_) => const Playground());
       case lugar:
         return MaterialPageRoute(builder: (_) => const Lugar());
         case inicio:
