@@ -22,7 +22,6 @@ import 'package:miki/screens/estadistica/statistics.dart';
 class AppRoutes {
   static const String home = '/';
   static const String login = '/login';
-  static const String menu = '/menu';
   static const String productos = '/productos';
   static const String perfil = '/perfil';
   static const String lugar = '/lugar';
@@ -49,11 +48,9 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
-        return MaterialPageRoute(builder: (_) => const menuPrincipal());
+        return MaterialPageRoute(builder: (_) => const MenuPrincipal());
       case login:
         return MaterialPageRoute(builder: (_) => const Login());
-      case menu:
-        return MaterialPageRoute(builder: (_) => const menuPrincipal());
       case productos:
         return MaterialPageRoute(builder: (_) => const MyProducts());
       case perfil:

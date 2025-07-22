@@ -59,7 +59,7 @@ class _LoginState extends State<Login> {
         await prefs.setString('userName', user.nombre);
 
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, AppRoutes.menu);
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
       } else {
         setState(() {
           _error = 'Correo o contraseña incorrecta.';

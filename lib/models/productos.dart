@@ -10,6 +10,11 @@ class Producto {
   final String? imagenSrc;
   final String? metodoPago;
   final int? idCategoria;
+  
+  // Campos agregados
+  final String? hora;
+  final String? mes;
+  final String? imagen;
 
   Producto({
     this.id,
@@ -23,6 +28,9 @@ class Producto {
     this.imagenSrc,
     this.metodoPago,
     this.idCategoria,
+    this.hora,
+    this.mes,
+    this.imagen,
   });
 
   factory Producto.fromMap(Map<String, dynamic> map) => Producto(
@@ -37,6 +45,9 @@ class Producto {
     imagenSrc: map['imagen_src'],
     metodoPago: map['metodo_pago'],
     idCategoria: map['id_categoria'],
+    hora: map['hora'],             // asegurarte que esto venga del query SQL
+    mes: map['mes'],               // igual
+    imagen: map['imagen'],         // o puedes usar imagenSrc directamente
   );
 
   Map<String, dynamic> toMap() => {
@@ -51,5 +62,8 @@ class Producto {
     'imagen_src': imagenSrc,
     'metodo_pago': metodoPago,
     'id_categoria': idCategoria,
+    'hora': hora,
+    'mes': mes,
+    'imagen': imagen,
   };
 }

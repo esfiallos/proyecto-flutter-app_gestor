@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miki/bd/databasehelper.dart';
 import 'package:miki/routes/app_routes.dart';
+import 'package:miki/service/super_service.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final Database db = await DatabaseHelper.instance.database;
+
+  // Insertar datos de prueba
+  final appService = AppService();
+  await appService.insertarDatosPrueba();
+  await appService.insertarUsuariosPrueba();
 
   final prefs = await SharedPreferences.getInstance();
   final userId = prefs.getInt('userId');
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: isLoggedIn ? AppRoutes.menu : AppRoutes.login,
+      initialRoute: isLoggedIn ? AppRoutes.home : AppRoutes.login,
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }

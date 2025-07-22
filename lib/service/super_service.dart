@@ -112,4 +112,46 @@ class AppService {
   Future<MetodoPagoMasUsado?> obtenerMetodoPagoMasUsado() async {
     return await ViewsDAO.getMetodoPagoMasUsado();
   }
+
+
+
+
+  Future<void> insertarDatosPrueba() async {
+  final productosPrueba = [
+    Producto(id: 1, nombre: 'Producto Demo 1', precio: 100.0, imagen: '', codigo: '', stock: 1, costo: 50),
+    Producto(id: 2, nombre: 'Producto Demo 2', precio: 150.5, imagen: '', codigo: '', stock: 12, costo: 5),
+    Producto(id: 3, nombre: 'Producto Demo 3', precio: 75.0, imagen: '', codigo: '', stock: 7, costo: 5),
+  ];
+
+  for (var p in productosPrueba) {
+    final existe = await ProductoDAO.getById(p.id!);
+    if (existe == null) {  // Solo insertar si no existe
+      await ProductoDAO.insert(p);
+    }
+  }
+
+  // También puedes insertar otros datos de prueba para balance, gastos, etc. según necesites.
+}
+
+Future<void> insertarUsuariosPrueba() async {
+  final usuariosPrueba = [
+    Usuario(
+      id: 1,
+      nombre: 'danerys',
+      correo: 'danerys@example.com',apellido: '', contrasena: '',
+    ),
+    Usuario(
+      id: 2,
+      nombre: 'usuario1',
+      correo: 'usuario1@example.com', apellido: '', contrasena: 'abcd',
+    ),
+  ];
+
+  for (var u in usuariosPrueba) {
+    final existe = await UsuarioDAO.getById(u.id!);
+    if (existe == null) {
+      await UsuarioDAO.insert(u);
+    }
+  }
+}
 }

@@ -1,36 +1,30 @@
-// Producto
 import 'package:flutter/material.dart';
 
 class ProductoWidget extends StatelessWidget {
   final String nombre;
-  final String hora;
-  final String mes;
   final String precio;
-  final String imagen;
+  final String? imagen;
 
   const ProductoWidget({
     super.key,
     required this.nombre,
-    required this.hora,
-    required this.mes,
     required this.precio,
-    required this.imagen,
+    this.imagen,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Image.asset(imagen, width: 40, height: 40, fit: BoxFit.cover),
-      title: Text(nombre),
-      subtitle: Text(hora, style: const TextStyle(color: Colors.blue)),
-      trailing: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(mes),
-          Text(precio, style: const TextStyle(color: Colors.blue)),
-        ],
-      ),
+      leading: (imagen != null && imagen!.isNotEmpty)
+          ? Image.asset(imagen!, width: 40, height: 40, fit: BoxFit.cover)
+          : Container(
+              width: 40,
+              height: 40,
+              color: Colors.grey.shade300,
+              child: const Icon(Icons.image_not_supported, color: Colors.grey),
+            ),
+      title: Text(nombre, style: const TextStyle(fontWeight: FontWeight.bold)),
+      trailing: Text(precio, style: const TextStyle(color: Colors.blue)),
     );
   }
 }
