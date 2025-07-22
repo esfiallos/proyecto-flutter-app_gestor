@@ -7,7 +7,7 @@ import 'package:miki/screens/auth/lugar.dart';
 import 'package:miki/screens/auth/restablecerContrasena.dart';
 import 'package:miki/screens/estadistica/balance.dart';
 import 'package:miki/screens/home/log_out.dart';
-import 'package:miki/screens/home/menuPrincipal.dart';
+import 'package:miki/screens/home/menuPrincipal.dart' as home_menu;
 import 'package:miki/screens/auth/login.dart';
 import 'package:miki/screens/inventario/GestionInventarioPage.dart';
 import 'package:miki/screens/inventario/inventario.dart';
@@ -48,7 +48,7 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
-        return MaterialPageRoute(builder: (_) => const MenuPrincipal());
+        return MaterialPageRoute(builder: (_) => const home_menu.MenuPrincipal());
       case login:
         return MaterialPageRoute(builder: (_) => const Login());
       case productos:

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:miki/models/productos.dart';
+import 'package:miki/widgets/ProductWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:miki/models/views/stock_productos.dart';
 import 'package:miki/service/super_service.dart';
 import 'package:miki/widgets/AccesoRapidoWidget.dart';
 import 'package:miki/widgets/MenuBar.dart';
-import 'package:miki/widgets/ProductWidget.dart';
 import 'package:miki/widgets/TotalesWidget.dart';
 
 class MenuPrincipal extends StatefulWidget {
@@ -16,12 +17,14 @@ class MenuPrincipal extends StatefulWidget {
 class _MenuPrincipalState extends State<MenuPrincipal> {
   double totalBalance = 0.0;
   double totalGastos = 0.0;
-  List<Producto> productos = [];
+  List<StockProducto> productos = [];
+  String nombreUsuario = '';
 
   @override
   void initState() {
     super.initState();
     cargarDatos();
+    cargarNombreUsuario();
   }
 
   Future<void> cargarDatos() async {
@@ -29,10 +32,22 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     final gastos = await AppService().obtenerGastos();
     final listaProductos = await AppService().obtenerStockActual();
 
+    double sumaGastos = 0.0;
+    for (var gasto in gastos) {
+      sumaGastos += gasto.cantidad ?? 0;
+    }
+
     setState(() {
-      totalBalance = balance as double;
-      totalGastos = gastos as double;
-      productos = listaProductos.cast<Producto>();
+      totalBalance = balance.balance;
+      totalGastos = sumaGastos;
+      productos = listaProductos;
+    });
+  }
+
+  Future<void> cargarNombreUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      nombreUsuario = prefs.getString('nombre') ?? '';
     });
   }
 
@@ -49,17 +64,17 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
               width: double.infinity,
               color: const Color(0xFF1B4CE0),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Hola, Bienvenido!',
+                  const Text('Hola, Bienvenido!',
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
-                  SizedBox(height: 5),
-                  Text('Danerys Flores',
-                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                  const SizedBox(height: 5),
+                  Text(nombreUsuario,
+                      style: const TextStyle(fontSize: 16, color: Colors.white)),
                 ],
               ),
             ),
@@ -90,11 +105,8 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                     filtroMesSemanaDia(),
 
                     // PRODUCTOS
-                    ...productos.map((p) => ProductoWidget(
-                          nombre: p.nombre,
-                          precio: 'Lps ${p.precio.toStringAsFixed(2)}',
-                          imagen: p.imagen,
-                        )),
+                    ...productos.map((p) => ProductoWidget(producto: p)),
+
 
                     const SizedBox(height: 10),
                     const Text('Accesos Rápidos',
