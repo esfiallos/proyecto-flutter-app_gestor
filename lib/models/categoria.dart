@@ -13,4 +13,13 @@ class Categoria {
     'id_categoria': id,
     'nombre': nombre,
   };
+
+  static Categoria? getById(List<Categoria> categorias, int id) {
+    try {
+      return categorias.firstWhere((categoria) => categoria.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+  
 }

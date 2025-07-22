@@ -47,6 +47,12 @@ class CategoriaDAO {
     final res = await db.query('Categorias');
     return res.map((e) => Categoria.fromMap(e)).toList();
   }
+
+  static Future<Categoria?> getById(int id) async {
+    final db = await DatabaseHelper.instance.database;
+    final res = await db.query('Categorias', where: 'id_categoria = ?', whereArgs: [id]);
+    return res.isNotEmpty ? Categoria.fromMap(res.first) : null;
+  }
 }
 
 class ProductoDAO {
@@ -61,20 +67,20 @@ class ProductoDAO {
     return res.map((e) => Producto.fromMap(e)).toList();
   }
 
-  static Future<Producto?> getById(int id) async {
+  static Future<Producto?> getById(String codigo) async {
     final db = await DatabaseHelper.instance.database;
-    final res = await db.query('Productos', where: 'id_producto = ?', whereArgs: [id]);
+    final res = await db.query('Productos', where: 'codigo = ?', whereArgs: [codigo]);
     return res.isNotEmpty ? Producto.fromMap(res.first) : null;
   }
 
   static Future<int> update(Producto p) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.update('Productos', p.toMap(), where: 'id_producto = ?', whereArgs: [p.id]);
+    return await db.update('Productos', p.toMap(), where: 'codigo = ?', whereArgs: [p.codigo]);
   }
 
-  static Future<int> delete(int id) async {
+  static Future<int> delete(String codigo) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.delete('Productos', where: 'id_producto = ?', whereArgs: [id]);
+    return await db.delete('Productos', where: 'codigo = ?', whereArgs: [codigo]);
   }
 }
 

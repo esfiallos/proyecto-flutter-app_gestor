@@ -37,6 +37,21 @@ class AppService {
     return await CategoriaDAO.getAll();
   }
 
+  Future<void> insertarCategoriasPrueba() async {
+    final categoriasPrueba = [
+      Categoria(id: 1, nombre: 'Bebidas'),
+      Categoria(id: 2, nombre: 'Snacks'),
+      Categoria(id: 3, nombre: 'Postres'),
+    ];
+
+    for (var c in categoriasPrueba) {
+      final existe = await CategoriaDAO.getById(c.id!);
+      if (existe == null) {
+        await CategoriaDAO.insert(c);
+      }
+    }
+  }
+
   /// PRODUCTOS
   Future<int> registrarProducto(Producto p) async {
     return await ProductoDAO.insert(p);
@@ -46,20 +61,23 @@ class AppService {
     return await ProductoDAO.getAll();
   }
 
-  Future<Producto?> obtenerProductoPorId(int id) async {
-    return await ProductoDAO.getById(id);
+  Future<Producto?> obtenerProductoPorId(String codigo) async {
+    return await ProductoDAO.getById(codigo);
   }
 
   Future<int> actualizarProducto(Producto p) async {
     return await ProductoDAO.update(p);
   }
 
-  Future<int> eliminarProducto(int id) async {
-    return await ProductoDAO.delete(id);
+  Future<int> eliminarProducto(String codigo) async {
+    return await ProductoDAO.delete(codigo);
   }
 
   /// VENTAS
-  Future<int> registrarVentaCompleta(Venta venta, List<DetalleVenta> detalles) async {
+  Future<int> registrarVentaCompleta(
+    Venta venta,
+    List<DetalleVenta> detalles,
+  ) async {
     final ventaId = await VentaDAO.insert(venta);
     for (var detalle in detalles) {
       await DetalleVentaDAO.insert(detalle.copyWith(idVenta: ventaId));
@@ -113,45 +131,69 @@ class AppService {
     return await ViewsDAO.getMetodoPagoMasUsado();
   }
 
-
-
-
+  /// ✅ Insertar categorías y productos de prueba
   Future<void> insertarDatosPrueba() async {
-  final productosPrueba = [
-    Producto(id: 1, nombre: 'Producto Demo 1', precio: 100.0, imagen: '', codigo: '', stock: 1, costo: 50),
-    Producto(id: 2, nombre: 'Producto Demo 2', precio: 150.5, imagen: '', codigo: '', stock: 12, costo: 5),
-    Producto(id: 3, nombre: 'Producto Demo 3', precio: 75.0, imagen: '', codigo: '', stock: 7, costo: 5),
-  ];
+    await insertarCategoriasPrueba(); //  Agregamos categorías primero
 
-  for (var p in productosPrueba) {
-    final existe = await ProductoDAO.getById(p.id!);
-    if (existe == null) {  // Solo insertar si no existe
-      await ProductoDAO.insert(p);
+    final productosPrueba = [
+      Producto(
+        codigo: 'P001',
+        nombre: 'Agua Mineral',
+        precio: 12.5,
+        stock: 10,
+        costo: 5.0,
+        descripcion: 'Botella de agua 500ml',
+        fechaVencimiento: '2025-12-31',
+        imagenSrc: '',
+        metodoPago: 'Efectivo',
+        idCategoria: 1, // Bebidas
+      ),
+      Producto(
+        codigo: 'P002',
+        nombre: 'Chips BBQ',
+        precio: 18.0,
+        stock: 25,
+        costo: 8.0,
+        descripcion: 'Bolsa de papas BBQ',
+        fechaVencimiento: '2026-01-01',
+        imagenSrc: '',
+        metodoPago: 'Tarjeta',
+        idCategoria: 2, // Snacks
+      ),
+    ];
+
+    for (var p in productosPrueba) {
+      // Usar el código como identificador único para evitar pasar un int? nulo
+      final existe = await ProductoDAO.getById(p.codigo);
+      if (existe == null) {
+        await ProductoDAO.insert(p);
+      }
     }
   }
 
-  // También puedes insertar otros datos de prueba para balance, gastos, etc. según necesites.
-}
+  Future<void> insertarUsuariosPrueba() async {
+    final usuariosPrueba = [
+      Usuario(
+        id: 1,
+        nombre: 'danerys',
+        correo: 'danerys@example.com',
+        apellido: '',
+        contrasena: '',
+      ),
+      Usuario(
+        id: 2,
+        nombre: 'usuario1',
+        correo: 'usuario1@example.com',
+        apellido: '',
+        contrasena: 'abcd',
+      ),
+    ];
 
-Future<void> insertarUsuariosPrueba() async {
-  final usuariosPrueba = [
-    Usuario(
-      id: 1,
-      nombre: 'danerys',
-      correo: 'danerys@example.com',apellido: '', contrasena: '',
-    ),
-    Usuario(
-      id: 2,
-      nombre: 'usuario1',
-      correo: 'usuario1@example.com', apellido: '', contrasena: 'abcd',
-    ),
-  ];
-
-  for (var u in usuariosPrueba) {
-    final existe = await UsuarioDAO.getById(u.id!);
-    if (existe == null) {
-      await UsuarioDAO.insert(u);
+    for (var u in usuariosPrueba) {
+      final existe = await UsuarioDAO.getById(u.id!);
+      if (existe == null) {
+        await UsuarioDAO.insert(u);
+      }
     }
   }
-}
 }

@@ -62,8 +62,5 @@ class Producto {
     'imagen_src': imagenSrc,
     'metodo_pago': metodoPago,
     'id_categoria': idCategoria,
-    'hora': hora,
-    'mes': mes,
-    'imagen': imagen,
   };
 }

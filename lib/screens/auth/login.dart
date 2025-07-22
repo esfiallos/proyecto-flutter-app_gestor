@@ -4,7 +4,6 @@ import 'package:miki/service/super_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:miki/routes/app_routes.dart';
 
-
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -40,22 +39,25 @@ class _LoginState extends State<Login> {
     try {
       final users = await _appService.obtenerTodosUsuarios();
       final user = users.firstWhere(
-  (u) => u.correo == email && u.contrasena == password,
-  orElse: () => Usuario(
-    id: null,
-    nombre: '',
-    apellido: '',
-    correo: '',
-    contrasena: '',
-  ),
-);
+        (u) =>
+            u.correo != null &&
+            u.contrasena != null &&
+            u.correo == email &&
+            u.contrasena == password,
+        orElse: () => Usuario(
+          id: null,
+          nombre: '',
+          apellido: '',
+          correo: '',
+          contrasena: '',
+        ),
+      );
 
-
-      if  (user.id != null && user.id != -1) {
+      if (user.id != null && user.id != -1) {
         // Guardar sesión
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('userId', user.id ?? -1);
-        await prefs.setString('userName', user.nombre);
+        await prefs.setInt('id_usuario', user.id ?? -1);
+        await prefs.setString('nombre', user.nombre);
 
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, AppRoutes.home);
@@ -66,7 +68,7 @@ class _LoginState extends State<Login> {
       }
     } catch (e) {
       setState(() {
-        _error = 'Ocurrió un error. Intenta de nuevo.';
+        _error = 'Error: ${e.toString()}';
       });
     }
 
@@ -90,9 +92,12 @@ class _LoginState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.blue, Colors.purple, Colors.pink],
-                    ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+                    shaderCallback: (bounds) =>
+                        const LinearGradient(
+                          colors: [Colors.blue, Colors.purple, Colors.pink],
+                        ).createShader(
+                          Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                        ),
                     child: const Text(
                       'Inicio De Sesión',
                       style: TextStyle(
@@ -118,7 +123,10 @@ class _LoginState extends State<Login> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "CORREO",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -134,7 +142,10 @@ class _LoginState extends State<Login> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "CONTRASEÑA",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -150,7 +161,8 @@ class _LoginState extends State<Login> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () => Navigator.pushNamed(context, AppRoutes.buscarCorreo),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, AppRoutes.buscarCorreo),
                       child: const Text(
                         "¿Olvidaste tu contraseña?",
                         style: TextStyle(color: Colors.blue),
@@ -160,7 +172,10 @@ class _LoginState extends State<Login> {
                   if (_error != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
                     ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -179,7 +194,10 @@ class _LoginState extends State<Login> {
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, AppRoutes.creacionCuenta);
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.creacionCuenta,
+                      );
                     },
                     child: const Text(
                       "¿No tienes una cuenta?",

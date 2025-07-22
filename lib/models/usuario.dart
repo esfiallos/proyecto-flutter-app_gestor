@@ -28,7 +28,7 @@ class Usuario {
     nombre: map['nombre'],
     apellido: map['apellido'],
     correo: map['correo'],
-    contrasena: map['contrasena'], // fíjate que en la DB la columna es 'contraseña'
+    contrasena: map['contraseña'], // fíjate que en la DB la columna es 'contraseña'
     whatsapp: map['whatsapp'],
     instagram: map['instagram'],
     imagenPerfil: map['imagen_perfil'],

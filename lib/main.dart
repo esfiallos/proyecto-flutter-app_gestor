@@ -20,7 +20,7 @@ void main() async {
   await appService.insertarUsuariosPrueba();
 
   final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getInt('userId');
+  final userId = prefs.getInt('id_usuario');
 
   runApp(
     Provider<Database>.value(
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: isLoggedIn ? AppRoutes.home : AppRoutes.login,
+      initialRoute: isLoggedIn ? AppRoutes.home : AppRoutes.bienvenida,
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }
