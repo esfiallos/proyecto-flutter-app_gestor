@@ -29,7 +29,7 @@ class DatabaseHelper {
           nombre TEXT,
           apellido TEXT,
           correo TEXT UNIQUE,
-          contraseña TEXT,
+          contrasena TEXT,
           whatsapp TEXT,
           instagram TEXT,
           imagen_perfil TEXT,

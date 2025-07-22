@@ -17,7 +17,6 @@ import 'package:miki/screens/products/categorias.dart';
 import 'package:miki/screens/products/registrarP.dart';
 import 'package:miki/screens/profile/edit_profile.dart';
 import 'package:miki/screens/profile/profile.dart';
-import 'package:miki/main.dart'; 
 import 'package:miki/screens/estadistica/statistics.dart';
 
 class AppRoutes {

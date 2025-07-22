@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:miki/models/databasehelper.dart';
+import 'package:miki/bd/databasehelper.dart';
 import 'package:miki/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 
 void main() async {
- WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // Abre la base de datos usando tu helper
   final Database db = await DatabaseHelper.instance.database;
 
-  // Ejecuta la app pasando la instancia DB con Provider
+  final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getInt('userId');
+
   runApp(
     Provider<Database>.value(
       value: db,
-      child: const MyApp(),
+      child: MyApp(
+        isLoggedIn: userId != null,
+      ),
     ),
   );
 }
 
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +39,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: AppRoutes.inicio,
+      initialRoute: isLoggedIn ? AppRoutes.menu : AppRoutes.login,
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }

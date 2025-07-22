@@ -1,8 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:miki/models/usuario.dart';
+import 'package:miki/service/super_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:miki/routes/app_routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AppService _appService = AppService();
+
+  bool _loading = false;
+  String? _error;
+
+  Future<void> _handleLogin() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _loading = false;
+        _error = 'Por favor, completa todos los campos.';
+      });
+      return;
+    }
+
+    try {
+      final users = await _appService.obtenerTodosUsuarios();
+      final user = users.firstWhere(
+  (u) => u.correo == email && u.contrasena == password,
+  orElse: () => Usuario(
+    id: null,
+    nombre: '',
+    apellido: '',
+    correo: '',
+    contrasena: '',
+  ),
+);
+
+
+      if  (user.id != null && user.id != -1) {
+        // Guardar sesión
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('userId', user.id ?? -1);
+        await prefs.setString('userName', user.nombre);
+
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, AppRoutes.menu);
+      } else {
+        setState(() {
+          _error = 'Correo o contraseña incorrecta.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Ocurrió un error. Intenta de nuevo.';
+      });
+    }
+
+    setState(() {
+      _loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,16 +82,8 @@ class Login extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Positioned(
-            top: -80,
-            left: -80,
-            child: _circle(180, Colors.purple),
-          ),
-          Positioned(
-            bottom: -80,
-            right: -80,
-            child: _circle(180, Colors.blue),
-          ),
+          Positioned(top: -80, left: -80, child: _circle(180, Colors.purple)),
+          Positioned(bottom: -80, right: -80, child: _circle(180, Colors.blue)),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
@@ -29,11 +93,9 @@ class Login extends StatelessWidget {
                   ShaderMask(
                     shaderCallback: (bounds) => const LinearGradient(
                       colors: [Colors.blue, Colors.purple, Colors.pink],
-                    ).createShader(
-                      Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-                    ),
+                    ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
                     child: const Text(
-                      'Inicio De Sesion',
+                      'Inicio De Sesión',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -61,9 +123,10 @@ class Login extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const TextField(
-                    decoration: InputDecoration(
-                      hintText: "",
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      hintText: "Ej: user@correo.com",
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -77,30 +140,29 @@ class Login extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   TextField(
+                    controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: "",
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.visibility_off),
-                        onPressed: () {},
-                      ),
+                    decoration: const InputDecoration(
+                      hintText: "Tu contraseña",
+                      border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/buscar-correo');
-
-                      },
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.buscarCorreo),
                       child: const Text(
-                        "Haz olvidado tu contraseña?",
+                        "¿Olvidaste tu contraseña?",
                         style: TextStyle(color: Colors.blue),
                       ),
                     ),
                   ),
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                    ),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
@@ -109,17 +171,16 @@ class Login extends StatelessWidget {
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onPressed: () {
-                        // Ir al menú principal
-                        Navigator.pushReplacementNamed(context, '/');
-                      },
-                      child: const Text("Iniciar"),
+                      onPressed: _loading ? null : _handleLogin,
+                      child: _loading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text("Iniciar"),
                     ),
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, '/crear-cuenta');
+                      Navigator.pushReplacementNamed(context, AppRoutes.creacionCuenta);
                     },
                     child: const Text(
                       "¿No tienes una cuenta?",
