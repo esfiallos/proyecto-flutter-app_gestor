@@ -1,8 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:miki/service/super_service.dart';
+import 'package:miki/models/usuario.dart';
 
-
-class CreacionCuenta extends StatelessWidget {
+class CreacionCuenta extends StatefulWidget {
   const CreacionCuenta({super.key});
+
+  @override
+  State<CreacionCuenta> createState() => _CreacionCuentaState();
+}
+
+class _CreacionCuentaState extends State<CreacionCuenta> {
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _apellidoController = TextEditingController();
+  final TextEditingController _correoController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController _contrasenaController = TextEditingController();
+
+  final AppService _service = AppService();
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _apellidoController.dispose();
+    _correoController.dispose();
+    _descripcionController.dispose();
+    _contrasenaController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _registrarCuenta() async {
+    if (_nombreController.text.isEmpty ||
+        _correoController.text.isEmpty ||
+        _contrasenaController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Por favor, llena los campos obligatorios")),
+      );
+      return;
+    }
+
+    final nuevoUsuario = Usuario(
+      nombre: _nombreController.text.trim(),
+      apellido: _apellidoController.text.trim(),
+      correo: _correoController.text.trim(),
+      contrasena: _contrasenaController.text.trim(),
+      imagenPerfil: '',
+      whatsapp: '',
+      instagram: '',
+      pais: '',
+      ubicacion: _descripcionController.text.trim(),
+    );
+
+    try {
+      final id = await _service.registrarUsuario(nuevoUsuario);
+
+      if (id > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Cuenta creada exitosamente")),
+        );
+        Navigator.pushReplacementNamed(context, '/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error al crear cuenta")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+  Widget _buildLabel(String text) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,33 +154,37 @@ class CreacionCuenta extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       _buildLabel("NOMBRES"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
+                      TextField(
+                        controller: _nombreController,
+                        decoration: const InputDecoration(border: OutlineInputBorder()),
                       ),
                       const SizedBox(height: 20),
 
                       _buildLabel("APELLIDOS"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
+                      TextField(
+                        controller: _apellidoController,
+                        decoration: const InputDecoration(border: OutlineInputBorder()),
                       ),
                       const SizedBox(height: 20),
 
                       _buildLabel("CORREO"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
+                      TextField(
+                        controller: _correoController,
+                        decoration: const InputDecoration(border: OutlineInputBorder()),
                       ),
                       const SizedBox(height: 20),
 
                       _buildLabel("DESCRIPCIÓN BREVE"),
-                      const TextField(
+                      TextField(
+                        controller: _descripcionController,
                         maxLines: 2,
-                        decoration: InputDecoration(border: OutlineInputBorder()),
+                        decoration: const InputDecoration(border: OutlineInputBorder()),
                       ),
                       const SizedBox(height: 20),
 
-
                       _buildLabel("CONTRASEÑA"),
                       TextField(
+                        controller: _contrasenaController,
                         obscureText: true,
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
@@ -116,11 +199,9 @@ class CreacionCuenta extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          },
+                          onPressed: _registrarCuenta,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF007BFF),
+                            backgroundColor: const Color(0xFF007BFF),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           child: const Text(
@@ -139,19 +220,6 @@ class CreacionCuenta extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLabel(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
         ),
       ),
     );
