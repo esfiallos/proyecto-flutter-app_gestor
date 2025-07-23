@@ -15,12 +15,9 @@ import '../models/venta.dart';
 import '../models/detalle_venta.dart';
 import '../models/gasto.dart';
 
-
-
 class AppService {
   /// USUARIOS
   Future<int> registrarUsuario(Usuario usuario) async {
-
     return await UsuarioDAO.insert(usuario);
   }
 
@@ -28,8 +25,22 @@ class AppService {
     return await UsuarioDAO.getById(id);
   }
 
+  Future<Usuario?> obtenerCorreoPorCorreo(String correo) async {
+    return await UsuarioDAO.getByCorreo(correo);
+  }
+
   Future<List<Usuario>> obtenerTodosUsuarios() async {
     return await UsuarioDAO.getAll();
+  }
+
+  /// Actualizar usuario completo (no solo contraseña)
+  Future<int> actualizarUsuario(Usuario usuario) async {
+    return await UsuarioDAO.update(usuario);
+  }
+
+  /// Actualizar solo contraseña por correo
+  Future<void> actualizarContrasena(String correo, String nuevaContrasena) async {
+    await UsuarioDAO.actualizarContrasena(correo, nuevaContrasena);
   }
 
   /// CATEGORÍAS
@@ -133,7 +144,7 @@ class AppService {
 
   /// ✅ Insertar categorías y productos de prueba
   Future<void> insertarDatosPrueba() async {
-    await insertarCategoriasPrueba(); //  Agregamos categorías primero
+    await insertarCategoriasPrueba(); // Agregamos categorías primero
 
     final productosPrueba = [
       Producto(
@@ -163,7 +174,6 @@ class AppService {
     ];
 
     for (var p in productosPrueba) {
-      // Usar el código como identificador único para evitar pasar un int? nulo
       final existe = await ProductoDAO.getById(p.codigo);
       if (existe == null) {
         await ProductoDAO.insert(p);

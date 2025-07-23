@@ -25,9 +25,25 @@ class UsuarioDAO {
     return res.isNotEmpty ? Usuario.fromMap(res.first) : null;
   }
 
+    static Future<Usuario?> getByCorreo(String correo) async {
+    final db = await DatabaseHelper.instance.database;
+    final res = await db.query('Usuarios', where: 'correo = ?', whereArgs: [correo]);
+    return res.isNotEmpty ? Usuario.fromMap(res.first) : null;
+  }
+
   static Future<int> update(Usuario usuario) async {
     final db = await DatabaseHelper.instance.database;
     return await db.update('Usuarios', usuario.toMap(), where: 'id_usuario = ?', whereArgs: [usuario.id]);
+  }
+
+   static Future<void> actualizarContrasena(String correo, String nueva) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      'usuarios',
+      {'contrasena': nueva},
+      where: 'correo = ?',
+      whereArgs: [correo],
+    );
   }
 
   static Future<int> delete(int id) async {

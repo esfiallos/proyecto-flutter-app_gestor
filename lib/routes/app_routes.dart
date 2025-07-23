@@ -62,11 +62,11 @@ class AppRoutes {
         case bienvenida:
         return MaterialPageRoute(builder: (_) => const Bienvenida());
         case buscarCorreo:
-        return MaterialPageRoute(builder: (_) => const BuscarCorreo());
+        return MaterialPageRoute(builder: (_) => const BuscarCorreoScreen());
         case creacionCuenta:
-        return MaterialPageRoute(builder: (_) => const CreacionCuenta());
+        return MaterialPageRoute(builder: (_) => const CreacionCuentaScreen());
         case restablecerContrasena:
-        return MaterialPageRoute(builder: (_) => const RestablecerContrasena());
+        return MaterialPageRoute(builder: (_) => const RestablecerContrasenaScreen());
         case estadistica:
         return MaterialPageRoute(builder: (_) => const Statistics());
         case balance:
