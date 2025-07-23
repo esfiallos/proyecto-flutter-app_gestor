@@ -1,25 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:miki/service/super_service.dart';
 import 'package:miki/widgets/MenuBar.dart';
+import 'package:miki/models/views/balance_general.dart';
+import 'package:miki/models/views/egreso_metodo_pago.dart';
+import 'package:miki/models/views/ventas_metodo_pago.dart';
 
-class Balance extends StatelessWidget {
-  const Balance({super.key});
+class Balance extends StatefulWidget {
+  const Balance({Key? key}) : super(key: key);
+
+  @override
+  State<Balance> createState() => _BalancePageState();
+}
+
+class _BalancePageState extends State<Balance> {
+  final AppService appService = AppService();
+
+  BalanceGeneral? balanceGeneral;
+  List<VentasPorMetodoPago> ventasPorMetodo = [];
+  List<EgresosPorMetodoPago> egresosPorMetodo = [];
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    cargarDatos();
+  }
+
+  Future<void> cargarDatos() async {
+    try {
+      final balance = await appService.obtenerBalance();
+      final ventas = await appService.obtenerVentasPorMetodoPago();
+      final egresos = await appService.obtenerEgresosPorMetodoPago();
+
+      setState(() {
+        balanceGeneral = balance;
+        ventasPorMetodo = ventas;
+        egresosPorMetodo = egresos;
+        isLoading = false;
+      });
+    } catch (e) {
+      // Manejar error, mostrar mensaje o log
+      setState(() {
+        isLoading = false;
+      });
+      // Opcional: mostrar snackbar o diálogo
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    const String totalBalance = 'L.2,187.00';
-    const String ingresosAmount = 'L.4,000.00';
-    const String egresosAmount = 'L.1,187.00';
-
-    final List<Map<String, dynamic>> ingresosSummary = [
-      {'label': 'Total De Ventas', 'value': 'L.4,000.00', 'color': Colors.black87},
-      {'label': 'Efectivo', 'value': 'L.1,000.00', 'color': Colors.blue},
-      {'label': 'Otros Metodos De Pago', 'value': 'L.3,000.00', 'color': Colors.blue},
-    ];
-
-    final List<Map<String, dynamic>> egresosSummary = [
-      {'label': 'Efectivo', 'value': '-L.594,00', 'color': Colors.red},
-      {'label': 'Otros Medios', 'value': '-L.593,00', 'color': Colors.red},
-    ];
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -28,9 +63,7 @@ class Balance extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Balance',
@@ -39,12 +72,12 @@ class Balance extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 30),
             Text(
-              totalBalance,
+              'L.${balanceGeneral?.balance.toStringAsFixed(2) ?? '0.00'}',
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
@@ -60,18 +93,16 @@ class Balance extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildBalanceCard(
-                  context,
                   icon: Icons.arrow_outward,
                   label: 'Ingresos',
-                  amount: ingresosAmount,
+                  amount: 'L.${balanceGeneral?.totalIngresos.toStringAsFixed(2) ?? '0.00'}',
                   iconColor: Colors.blue,
                   amountColor: Colors.blue,
                 ),
                 _buildBalanceCard(
-                  context,
                   icon: Icons.arrow_downward,
                   label: 'Egresos',
-                  amount: egresosAmount,
+                  amount: 'L.${balanceGeneral?.totalEgresos.toStringAsFixed(2) ?? '0.00'}',
                   iconColor: Colors.red,
                   amountColor: Colors.red,
                 ),
@@ -79,7 +110,7 @@ class Balance extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 8),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -97,7 +128,7 @@ class Balance extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Resumen De Ingresos',
+                    'Resumen De Ingresos Por Método',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -105,11 +136,19 @@ class Balance extends StatelessWidget {
                     ),
                   ),
                   const Divider(height: 25, thickness: 1, color: Colors.grey),
-                  ...ingresosSummary.map((item) =>
-                      _buildSummaryRow(item['label']!, item['value']!, item['color']!)),
+                  if (ventasPorMetodo.isEmpty)
+                    const Text('No hay datos de ingresos.'),
+                  ...ventasPorMetodo.map(
+                    (v) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(v.metodoPago),
+                      subtitle: Text('Ventas: ${v.cantidadVentas}'),
+                      trailing: Text('L.${v.total.toStringAsFixed(2)}'),
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Resumen De Egresos',
+                    'Resumen De Egresos Por Método',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -117,8 +156,16 @@ class Balance extends StatelessWidget {
                     ),
                   ),
                   const Divider(height: 25, thickness: 1, color: Colors.grey),
-                  ...egresosSummary.map((item) =>
-                      _buildSummaryRow(item['label']!, item['value']!, item['color']!)),
+                  if (egresosPorMetodo.isEmpty)
+                    const Text('No hay datos de egresos.'),
+                  ...egresosPorMetodo.map(
+                    (e) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(e.metodoPago),
+                      subtitle: Text('Gastos: ${e.cantidadGastos}'),
+                      trailing: Text('-L.${e.total.toStringAsFixed(2)}'),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -126,14 +173,11 @@ class Balance extends StatelessWidget {
           ],
         ),
       ),
-
-      //  Aquí se agrega el menú inferior
       bottomNavigationBar: const MenuBarraAbajo(currentIndex: 2),
     );
   }
 
-  Widget _buildBalanceCard(
-    BuildContext context, {
+  Widget _buildBalanceCard({
     required IconData icon,
     required String label,
     required String amount,
@@ -163,26 +207,6 @@ class Balance extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value, Color valueColor) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(fontSize: 16, color: Colors.grey[700])),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: valueColor,
-            ),
-          ),
-        ],
       ),
     );
   }
