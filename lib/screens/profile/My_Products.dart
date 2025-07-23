@@ -1,131 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:miki/widgets/product_card.dart';
+import 'package:miki/models/productos.dart';
+import 'package:miki/service/super_service.dart';
 
-
-class MyProducts extends StatelessWidget {
+class MyProducts extends StatefulWidget {
   const MyProducts({super.key});
+
+  @override
+  State<MyProducts> createState() => _PantallaProductosState();
+}
+
+class _PantallaProductosState extends State<MyProducts> {
+  final AppService _appService = AppService();
+  List<Producto> _productos = [];
+  bool _cargando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    cargarProductos();
+  }
+
+  Future<void> cargarProductos() async {
+    final productos = await _appService.obtenerProductos();
+    setState(() {
+      _productos = productos;
+      _cargando = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blueAccent,
-        title: Text('Mis productos',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            
-            Navigator.pop(context);
-          },
-        ),
-      ),
-
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-          SizedBox(height: 15),
-            CircleAvatar(
-              radius: 40, 
-              backgroundImage: NetworkImage(
-                ' ', 
-              ),
-              backgroundColor: const Color.fromARGB(255, 19, 0, 0), 
-            ),
-            SizedBox(height: 5),
-            
-            Text(
-                'Danery Flores',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      appBar: AppBar(title: const Text("Lista de Productos")),
+      body: _cargando
+          ? const Center(child: CircularProgressIndicator())
+          : _productos.isEmpty
+              ? const Center(child: Text("No hay productos"))
+              : ListView.builder(
+                  itemCount: _productos.length,
+                  itemBuilder: (context, index) {
+                    final producto = _productos[index];
+                    return Card(
+                      margin: const EdgeInsets.all(8),
+                      child: ListTile(
+                        leading: _imagenProducto(producto),
+                        title: Text(producto.nombre),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Código: ${producto.codigo}"),
+                            Text("Precio: L. ${producto.precio}"),
+                            Text("Stock: ${producto.stock}"),
+                            if (producto.descripcion != null)
+                              Text("Descripción: ${producto.descripcion}"),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ), 
-              SizedBox(height: 5),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.location_on, 
-                  color: Colors.blueGrey[800],
-                  size: 24, 
-                ),
-                SizedBox(width: 8), 
-                Text(
-                'Tegucigalpa',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              ]
-            ),
-
-            SizedBox(height: 5), 
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.phone, 
-                  color: Colors.blueGrey[800],
-                  size: 24, 
-                ),
-                SizedBox(width: 8), 
-                Icon(
-                Icons.camera_alt, 
-                color: Colors.blueGrey[800],
-                size: 24, 
-              ),
-              SizedBox(width: 8), 
-              Icon(
-                Icons.email, 
-                color: Colors.blueGrey[800],
-                size: 24, 
-              ),
-              ]
-            ),
-            SizedBox(height: 10), 
-
-            Text('Productos del vendedor',
-              style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              ),
-            ),
-
-
-
-            const ProductCard(
-              imageUrl: 'assets/producto1.png',
-              productName: 'Tenis Deportivos',
-              productDescription: 'Comodos, duraderos, flexibles.',
-              priceText: 'L.1200.00',
-              availableText: 'Uds. 3',
-            ),
-
-            const ProductCard(
-              imageUrl: 'assets/producto2.png',
-              productName: 'Gorra LA',
-              productDescription: 'Color azul y letras blancas.',
-              priceText: 'L.700.00',
-              availableText: 'Uds. 6',
-            ),
-
-            const ProductCard(
-              imageUrl: 'assets/producto3.png',
-              productName: 'Camisa Polo',
-              productDescription: 'Disponible en azul y blanco, tela de algodon.',
-              priceText: 'L.500.00',
-              availableText: 'Uds. 10',
-            ),
-          ]
-        ),
-      )
     );
+  }
+
+  Widget _imagenProducto(Producto producto) {
+    if (producto.imagenSrc != null && producto.imagenSrc!.isNotEmpty) {
+      return Image.network(
+        producto.imagenSrc!,
+        width: 50,
+        height: 50,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.image_not_supported),
+      );
+    } else {
+      return const Icon(Icons.shopping_bag, size: 50);
+    }
   }
 }
