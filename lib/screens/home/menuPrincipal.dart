@@ -153,7 +153,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: const [
-        AccesoRapidoWidget(imagen: 'assets/venta.png', texto: 'Registrar\nVenta', ruta: '/'),
+        AccesoRapidoWidget(imagen: 'assets/venta.png', texto: 'Registrar\nVenta', ruta: '/modal-ventas'),
         AccesoRapidoWidget(imagen: 'assets/gasto.png', texto: 'Registrar\nGastos', ruta: '/nuevoGasto'),
         AccesoRapidoWidget(imagen: 'assets/inventario.png', texto: 'Inventario', ruta: '/inventario'),
       ],
