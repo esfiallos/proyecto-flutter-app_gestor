@@ -74,7 +74,7 @@ class AppRoutes {
         case restablecerContrasena:
         return MaterialPageRoute(builder: (_) => const RestablecerContrasenaScreen());
         case estadistica:
-        return MaterialPageRoute(builder: (_) => const Statistics());
+        return MaterialPageRoute(builder: (_) => const StatisticsScreen());
         case balance:
         return MaterialPageRoute(builder: (_) => const Balance());
         case inventario:
