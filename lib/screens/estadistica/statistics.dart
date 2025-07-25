@@ -5,6 +5,7 @@ import 'package:miki/models/views/producto_masvendido_mes.dart';
 import 'package:miki/models/views/producto_menovendido_mes.dart';
 import 'package:fl_chart/fl_chart.dart' show BarChart, BarChartData, BarChartGroupData, BarChartRodData, FlTitlesData, AxisTitles, SideTitles, FlBorderData, FlGridData, BarChartAlignment;
 import 'package:miki/service/super_service.dart';
+import 'package:miki/widgets/MenuBar.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -68,7 +69,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildChartSection({required String title, required Map<String, double> dataPoints, required double maxHeight, Color? chartColor}) {
+  Widget _buildChartSection({required String title, required Map<String, double> dataPoints, Color? chartColor}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -102,7 +103,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       final entry = dataPoints.keys.firstWhere(
                           (key) => key.hashCode == value.toInt(),
                           orElse: () => '');
-                      return Text(entry, style: const TextStyle(fontSize: 10));
+                      return Text(entry, style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis);
                     },
                   ),
                 ),
@@ -140,31 +141,38 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 subValue: '${_metodoPagoMasUsado?.totalUsos.toStringAsFixed(1) ?? 0}%',
               ),
               const SizedBox(height: 16),
-              SegmentedButton<String>(
-                segments: _meses.map((mes) => ButtonSegment(value: mes, label: Text(mes))).toList(),
-                selected: _selectedMonth,
-                onSelectionChanged: (Set<String> newSelection) {
-                  setState(() {
-                    _selectedMonth = newSelection;
-                  });
-                },
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: _meses.map((mes) {
+                  final bool selected = _selectedMonth.contains(mes);
+                  return ChoiceChip(
+                    label: Text(mes, style: TextStyle(color: selected ? Colors.white : Colors.black)),
+                    selected: selected,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedMonth = {mes};
+                      });
+                    },
+                    selectedColor: Colors.blue,
+                    backgroundColor: Colors.grey[200],
+                  );
+                }).toList(),
               ),
-              const SizedBox(height: 16),
               _buildChartSection(
                 title: 'Top 5 De Ventas',
                 dataPoints: _filtrarVentasPorMes(_masVendidosPorMes, mesActual),
-                maxHeight: 15.0,
               ),
               _buildChartSection(
                 title: 'Productos Menos Vendidos',
                 dataPoints: _filtrarVentasPorMes(_menosVendidosPorMes, mesActual),
-                maxHeight: 15.0,
                 chartColor: Colors.lightBlue,
               ),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: MenuBarraAbajo(currentIndex: 1),
     );
   }
 }

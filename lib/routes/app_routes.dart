@@ -18,8 +18,7 @@ import 'package:miki/screens/profile/My_Products.dart';
 import 'package:miki/screens/profile/edit_profile.dart';
 import 'package:miki/screens/profile/profile.dart';
 import 'package:miki/screens/estadistica/statistics.dart';
-import 'package:miki/screens/ventas/canasta.dart';
-import 'package:miki/widgets/modal_ventas.dart';
+
 
 class AppRoutes {
   static const String home = '/';
@@ -43,10 +42,6 @@ class AppRoutes {
   static const String logOut = '/log-out';
   static const String nuevoGasto = '/nuevoGasto'; 
   static const String categorias = '/categorias';
-  static const String ventaProducto = '/venta-producto';
-  static const String ventaLibre = '/venta-libre';
-
-
 
 
 
@@ -70,11 +65,11 @@ class AppRoutes {
         case buscarCorreo:
         return MaterialPageRoute(builder: (_) => const BuscarCorreoScreen());
         case creacionCuenta:
-        return MaterialPageRoute(builder: (_) => const CreacionCuentaScreen());
-        case restablecerContrasena:
-        return MaterialPageRoute(builder: (_) => const RestablecerContrasenaScreen());
+               return MaterialPageRoute(builder: (_) => const CreacionCuentaScreen());
+
         case estadistica:
-        return MaterialPageRoute(builder: (_) => const StatisticsScreen());
+                return MaterialPageRoute(builder: (_) => const StatisticsScreen());
+
         case balance:
         return MaterialPageRoute(builder: (_) => const Balance());
         case inventario:
@@ -95,11 +90,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const NuevoGasto());
         case categorias:
         return MaterialPageRoute(builder: (_) => const CategoriaManager());
-        case ventaProducto:
-        return MaterialPageRoute(builder: (_) => const ConfirmarCantidadesPage());
-      case ventaLibre:
-        return MaterialPageRoute(builder: (_) => const ConfirmarCantidadesPage()); 
-      
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
