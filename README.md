@@ -25,17 +25,6 @@
 
 ---
 
-## Estructura del proyecto
-
-/lib
-│
-# Lógica y manejo de 
-controllers/ # Para consultas en base de datos
-models/ # Modelos de datos: Entrada, Salida, etc.
-screens/ # Interfaces principales de la app
-db/ # Configuración y acceso a SQLite
-main.dart # Punto de entrada de la aplicación
-
 
 ## Cómo ejecutar el proyecto
 
