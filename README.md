@@ -2,6 +2,8 @@
 
 **Miki App** es una aplicación móvil desarrollada en Flutter pensada para pequeños negocios que necesitan gestionar de forma sencilla y eficiente sus **entradas y salidas de productos, dinero o servicios**. Diseñada para llevar un control práctico desde el teléfono, esta app busca optimizar los flujos diarios de cualquier emprendimiento.
 
+Puedes ver mas es: [ Web Oficial ](https://esfiallos.github.io/proyecto-flutter-app_gestor/)
+
 ---
 
 ## Características principales
