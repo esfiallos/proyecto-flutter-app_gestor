@@ -24,13 +24,13 @@ class _CreacionCuentaScreenState extends State<CreacionCuentaScreen> {
     final contrasena = _contrasenaCtrl.text;
 
     if (nombre.isEmpty || apellido.isEmpty || correo.isEmpty || contrasena.isEmpty) {
-      _mostrarMensaje('Por favor completa todos los campos.');
+      _mostrarDialogo('Error', 'Por favor completa todos los campos.');
       return;
     }
 
     final existente = await _service.obtenerCorreoPorCorreo(correo);
     if (existente != null) {
-      _mostrarMensaje('Este correo ya está registrado.');
+      _mostrarDialogo('Correo en uso', 'Este correo ya está registrado.');
       return;
     }
 
@@ -43,14 +43,47 @@ class _CreacionCuentaScreenState extends State<CreacionCuentaScreen> {
 
     await _service.registrarUsuario(nuevoUsuario);
 
-    _mostrarMensaje('Cuenta creada con éxito.');
-    Navigator.pushReplacementNamed(context, '/login');
+    if (!mounted) return;
+
+    // Mostrar mensaje de éxito y esperar confirmación del usuario
+    _mostrarDialogo(
+      'Cuenta creada',
+      'Tu cuenta fue creada con éxito.',
+  onAceptar: () {
+   Navigator.of(context).pop(); // cerrar el diálogo primero
+    Navigator.pushReplacementNamed(context, '/login'); // navegar al login
+  },
+    );
   }
 
-  void _mostrarMensaje(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensaje)),
+  void _mostrarDialogo(String titulo, String mensaje, {VoidCallback? onAceptar}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(titulo),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el diálogo
+              if (onAceptar != null) {
+                onAceptar();
+              }
+            },
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nombreCtrl.dispose();
+    _apellidoCtrl.dispose();
+    _correoCtrl.dispose();
+    _contrasenaCtrl.dispose();
+    super.dispose();
   }
 
   @override

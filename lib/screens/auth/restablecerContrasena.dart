@@ -2,73 +2,77 @@ import 'package:flutter/material.dart';
 import 'package:miki/models/usuario.dart';
 import 'package:miki/service/super_service.dart';
 
+
 class RestablecerContrasenaScreen extends StatefulWidget {
-  const RestablecerContrasenaScreen({super.key});
+  final Usuario usuario;
+
+  const RestablecerContrasenaScreen({super.key, required this.usuario});
 
   @override
   State<RestablecerContrasenaScreen> createState() => _RestablecerContrasenaScreenState();
 }
 
 class _RestablecerContrasenaScreenState extends State<RestablecerContrasenaScreen> {
-  final _nuevaCtrl = TextEditingController();
+  final TextEditingController _nuevaCtrl = TextEditingController();
   final AppService _service = AppService();
 
-  late Usuario usuario;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    usuario = ModalRoute.of(context)!.settings.arguments as Usuario;
+  void dispose() {
+    _nuevaCtrl.dispose();
+    super.dispose();
+  }
+
+  void _mostrarMensaje(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
   void _cambiarContrasena() async {
-    final nueva = _nuevaCtrl.text;
+    final nueva = _nuevaCtrl.text.trim();
+
     if (nueva.isEmpty) {
       _mostrarMensaje('Escribe una nueva contraseña.');
       return;
     }
 
-    final actualizado = Usuario(
-      id: usuario.id,
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      correo: usuario.correo,
-      contrasena: nueva,
-      whatsapp: usuario.whatsapp,
-      instagram: usuario.instagram,
-      imagenPerfil: usuario.imagenPerfil,
-      pais: usuario.pais,
-      ubicacion: usuario.ubicacion,
-    );
-
+    final actualizado = widget.usuario.copyWith(contrasena: nueva);
     await _service.actualizarUsuario(actualizado);
-    _mostrarMensaje('Contraseña actualizada.');
-    Navigator.pushReplacementNamed(context, '/login');
-  }
 
-  void _mostrarMensaje(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensaje)),
-    );
+    // Esperar un segundo para que el usuario vea el mensaje
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Navegar al login
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nueva Contraseña')),
+      appBar: AppBar(
+        title: const Text('Restablecer Contraseña'),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Text(
+              'Restablece la contraseña de:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(widget.usuario.correo, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
             TextField(
               controller: _nuevaCtrl,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Nueva contraseña'),
+              decoration: const InputDecoration(
+                labelText: 'Nueva Contraseña',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _cambiarContrasena,
-              child: const Text('Actualizar'),
+              child: const Text('Cambiar Contraseña'),
             ),
           ],
         ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:miki/screens/auth/restablecerContrasena.dart';
 import 'package:miki/service/super_service.dart';
+import 'package:miki/models/usuario.dart';
 
 class BuscarCorreoScreen extends StatefulWidget {
   const BuscarCorreoScreen({super.key});
@@ -14,16 +16,23 @@ class _BuscarCorreoScreenState extends State<BuscarCorreoScreen> {
 
   void _verificarCorreo() async {
     final correo = _correoCtrl.text.trim();
+
     if (correo.isEmpty) {
       _mostrarMensaje('Ingresa tu correo.');
       return;
     }
 
     final usuario = await _service.obtenerCorreoPorCorreo(correo);
+
     if (usuario == null) {
       _mostrarMensaje('Correo no encontrado.');
     } else {
-      Navigator.pushNamed(context, '/restablecer', arguments: usuario);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RestablecerContrasenaScreen(usuario: usuario),
+        ),
+      );
     }
   }
 
@@ -44,6 +53,7 @@ class _BuscarCorreoScreenState extends State<BuscarCorreoScreen> {
             TextField(
               controller: _correoCtrl,
               decoration: const InputDecoration(labelText: 'Correo registrado'),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
