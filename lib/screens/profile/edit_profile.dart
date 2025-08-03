@@ -28,7 +28,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> _loadUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getInt('user_id');
+    final id = prefs.getInt('id_usuario');
     if (id != null) {
       final usuarioCargado = await AppService().obtenerUsuarioPorId(id);
       if (usuarioCargado != null) {
