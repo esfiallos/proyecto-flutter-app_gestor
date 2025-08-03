@@ -4,27 +4,30 @@ class AccesoRapidoWidget extends StatelessWidget {
   final String imagen;
   final String texto;
   final String? ruta;
+  final VoidCallback? onPressed;
 
   const AccesoRapidoWidget({super.key, 
                   required this.imagen, 
                   required this.texto,
-                  this.ruta});
+                  this.ruta, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () {
-             if (ruta != null) {
-              Navigator.pushNamed(context, ruta!);
-            } else {
-              // Si no se proporciona ruta, podrías mostrar algo
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Ruta no disponible")),
-              );
-            }
-          },
+          onPressed: onPressed ??
+    () {
+      if (ruta != null) {
+        Navigator.pushNamed(context, ruta!);
+      } else {
+        // Si no se proporciona ruta, podrías mostrar algo
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ruta no disponible")),
+        );
+      }
+    },
+
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             padding: const EdgeInsets.all(15),

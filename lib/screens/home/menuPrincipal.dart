@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miki/widgets/ProductWidget.dart';
+import 'package:miki/widgets/modal_ventas.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:miki/models/views/stock_productos.dart';
 import 'package:miki/service/super_service.dart';
@@ -152,10 +153,32 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
   Widget accesosRapidos() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: const [
-        AccesoRapidoWidget(imagen: 'assets/venta.png', texto: 'Registrar\nVenta', ruta: '/modal-ventas'),
-        AccesoRapidoWidget(imagen: 'assets/gasto.png', texto: 'Registrar\nGastos', ruta: '/nuevoGasto'),
-        AccesoRapidoWidget(imagen: 'assets/inventario.png', texto: 'Inventario', ruta: '/inventario'),
+      children: [
+        AccesoRapidoWidget(
+  imagen: 'assets/venta.png',
+  texto: 'Registrar\nVenta',
+  onPressed: () {
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (context) {
+        return NuevaVentaModal(
+          onVentaProductos: () {
+            Navigator.pop(context); // Cierra el modal
+            Navigator.pushNamed(context, '/venta-producto'); // Asegúrate de crear esta ruta
+          },
+          onVentaLibre: () {
+            Navigator.pop(context); // Cierra el modal
+            Navigator.pushNamed(context, '/venta-libre'); // Igual, debe estar registrada
+          },
+        );
+      },
+    );
+  },
+),
+
+        const AccesoRapidoWidget(imagen: 'assets/gasto.png', texto: 'Registrar\nGastos', ruta: '/nuevoGasto'),
+        const AccesoRapidoWidget(imagen: 'assets/inventario.png', texto: 'Inventario', ruta: '/inventario'),
       ],
     );
   }

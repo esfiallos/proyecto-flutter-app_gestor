@@ -6,7 +6,7 @@ import 'package:miki/models/views/egreso_metodo_pago.dart';
 import 'package:miki/models/views/ventas_metodo_pago.dart';
 
 class Balance extends StatefulWidget {
-  const Balance({Key? key}) : super(key: key);
+  const Balance({super.key});
 
   @override
   State<Balance> createState() => _BalancePageState();

@@ -3,7 +3,6 @@ import 'package:miki/models/usuario.dart';
 import 'package:miki/service/super_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:miki/routes/app_routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Login extends StatefulWidget {
@@ -42,8 +41,6 @@ class _LoginState extends State<Login> {
       final users = await _appService.obtenerTodosUsuarios();
       final user = users.firstWhere(
         (u) =>
-            u.correo != null &&
-            u.contrasena != null &&
             u.correo == email &&
             u.contrasena == password,
         orElse: () => Usuario(
