@@ -27,23 +27,23 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     cargarDatos();
     cargarNombreUsuario();
   }
+Future<void> cargarDatos() async {
+  final balance = await AppService().obtenerBalance();
+  final gastos = await AppService().obtenerGastos();
+  final listaProductos = await AppService().obtenerStockActual();
 
-  Future<void> cargarDatos() async {
-    final balance = await AppService().obtenerBalance();
-    final gastos = await AppService().obtenerGastos();
-    final listaProductos = await AppService().obtenerStockActual();
-
-    double sumaGastos = 0.0;
-    for (var gasto in gastos) {
-      sumaGastos += gasto.cantidad ?? 0;
-    }
-
-    setState(() {
-      totalBalance = balance.balance;
-      totalGastos = sumaGastos;
-      productos = listaProductos;
-    });
+  double sumaGastos = 0.0;
+  for (var gasto in gastos) {
+    sumaGastos += gasto.cantidad ?? 0;
   }
+
+  setState(() {
+    totalBalance = balance.balance;
+    totalGastos = sumaGastos;
+    productos = listaProductos;
+  });
+}
+
 
   Future<void> cargarNombreUsuario() async {
     final prefs = await SharedPreferences.getInstance();
@@ -151,35 +151,48 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
   }
 
   Widget accesosRapidos() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        AccesoRapidoWidget(
-  imagen: 'assets/venta.png',
-  texto: 'Registrar\nVenta',
-  onPressed: () {
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (context) {
-        return NuevaVentaModal(
-          onVentaProductos: () {
-            Navigator.pop(context); // Cierra el modal
-            Navigator.pushNamed(context, '/venta-producto'); // Asegúrate de crear esta ruta
-          },
-          onVentaLibre: () {
-            Navigator.pop(context); // Cierra el modal
-            Navigator.pushNamed(context, '/venta-libre'); // Igual, debe estar registrada
-          },
-        );
-      },
-    );
-  },
-),
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceAround,
+    children: [
+      AccesoRapidoWidget(
+        imagen: 'assets/venta.png',
+        texto: 'Registrar\nVenta',
+        onPressed: () {
+          showDialog(
+            context: context,
+            barrierColor: Colors.transparent,
+            builder: (context) {
+              return NuevaVentaModal(
+                onVentaProductos: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/venta-producto');
+                },
+                onVentaLibre: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/venta-libre');
+                },
+              );
+            },
+          );
+        },
+      ),
 
-        const AccesoRapidoWidget(imagen: 'assets/gasto.png', texto: 'Registrar\nGastos', ruta: '/nuevoGasto'),
-        const AccesoRapidoWidget(imagen: 'assets/inventario.png', texto: 'Inventario', ruta: '/inventario'),
-      ],
-    );
-  }
+      const AccesoRapidoWidget(
+        imagen: 'assets/gasto.png',
+        texto: 'Registrar\nGastos',
+        ruta: '/nuevoGasto',
+      ),
+
+      // ✅ Inventario actualizado
+      AccesoRapidoWidget(
+        imagen: 'assets/inventario.png',
+        texto: 'Inventario',
+        onPressed: () async {
+          await Navigator.pushNamed(context, '/inventario');
+          await cargarDatos(); // ← recarga el stock al volver
+        },
+      ),
+    ],
+  );
+}
 }

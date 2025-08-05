@@ -132,12 +132,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               _buildInfoCard(
                 label: 'El producto más vendido',
-                value: _productoMasVendido?.nombre ?? 'Cargando...',
+                value: _productoMasVendido?.nombre ?? 'Sin datos',
                 subValue: 'Vendidas: ${_productoMasVendido?.totalVendido ?? 0}',
               ),
               _buildInfoCard(
                 label: 'Método de pago más usado',
-                value: _metodoPagoMasUsado?.metodoPago ?? 'Cargando...',
+                value: _metodoPagoMasUsado?.metodoPago ?? 'Sin ...',
                 subValue: '${_metodoPagoMasUsado?.totalUsos.toStringAsFixed(1) ?? 0}%',
               ),
               const SizedBox(height: 16),

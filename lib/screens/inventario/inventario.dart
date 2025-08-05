@@ -34,7 +34,6 @@ class _InventarioPageState extends State<InventarioPage> {
     });
   }
 
-  // Obtener nombre categoría por id
   String _getNombreCategoria(int? id) {
     if (id == null) return 'Sin categoría';
     final cat = _categorias.firstWhere(
@@ -44,7 +43,6 @@ class _InventarioPageState extends State<InventarioPage> {
     return cat.nombre;
   }
 
-  // Filtrar productos según categoría seleccionada
   List<StockProducto> get _productosFiltrados {
     if (_categoriaSeleccionada == 'Todas') return _productos;
     final cat = _categorias.firstWhere(
@@ -82,7 +80,6 @@ class _InventarioPageState extends State<InventarioPage> {
               child: const Text('Registrar Producto'),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
@@ -97,10 +94,7 @@ class _InventarioPageState extends State<InventarioPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Total de Referencias',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      const Text('Total de Referencias', style: TextStyle(fontWeight: FontWeight.bold)),
                       Text('${_productos.length}'),
                     ],
                   ),
@@ -108,22 +102,15 @@ class _InventarioPageState extends State<InventarioPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Costo Total',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'L${_productos.fold<double>(0, (sum, p) => sum + p.costo)}',
-                      ),
+                      const Text('Costo Total', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('L${_productos.fold<double>(0, (sum, p) => sum + p.costo)}'),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-
           const SizedBox(height: 10),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: SingleChildScrollView(
@@ -147,9 +134,7 @@ class _InventarioPageState extends State<InventarioPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 10),
-
           Expanded(
             child: _productosFiltrados.isEmpty
                 ? const Center(child: Text('No hay productos'))
@@ -167,7 +152,6 @@ class _InventarioPageState extends State<InventarioPage> {
                         ),
                         child: Row(
                           children: [
-                            // Imagen o placeholder
                             Container(
                               width: 60,
                               height: 60,
@@ -185,17 +169,11 @@ class _InventarioPageState extends State<InventarioPage> {
                                   ? const Icon(Icons.image_not_supported, color: Colors.grey, size: 30)
                                   : null,
                             ),
-
                             const SizedBox(width: 16),
-
-                            // Información del producto
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/gestion-inventario',
-                                  );
+                                  Navigator.pushReplacementNamed(context, '/gestion-inventario');
                                 },
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,7 +198,6 @@ class _InventarioPageState extends State<InventarioPage> {
           ),
         ],
       ),
-
       bottomNavigationBar: const MenuBarraAbajo(currentIndex: 3),
     );
   }
