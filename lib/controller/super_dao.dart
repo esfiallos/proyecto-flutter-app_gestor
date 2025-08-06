@@ -87,6 +87,7 @@ class ProductoDAO {
     final db = await DatabaseHelper.instance.database;
     final res = await db.query('Productos', where: 'codigo = ?', whereArgs: [codigo]);
     return res.isNotEmpty ? Producto.fromMap(res.first) : null;
+
   }
 
   static Future<int> update(Producto p) async {
@@ -98,6 +99,17 @@ class ProductoDAO {
     final db = await DatabaseHelper.instance.database;
     return await db.delete('Productos', where: 'codigo = ?', whereArgs: [codigo]);
   }
+
+  static Future<List<Producto>> searchByNombre(String nombre) async {
+    final db = await DatabaseHelper.instance.database;
+    final res = await db.query(
+      'Productos',
+      where: 'nombre LIKE ?',
+      whereArgs: ['%$nombre%'],
+    );
+    return res.map((e) => Producto.fromMap(e)).toList();
+  }
+
 }
 
 class VentaDAO {

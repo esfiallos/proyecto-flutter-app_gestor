@@ -84,6 +84,12 @@ class AppService {
     return await ProductoDAO.delete(codigo);
   }
 
+  /// Buscar productos por nombre
+Future<List<Producto>> buscarProductosPorNombre(String nombre) async {
+  return await ProductoDAO.searchByNombre(nombre);
+}
+
+
   /// VENTAS
   Future<int> registrarVentaCompleta(
     Venta venta,
