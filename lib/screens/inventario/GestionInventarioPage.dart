@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:miki/models/views/stock_productos.dart';
+import 'package:miki/screens/products/actualizar.dart';
 import 'package:miki/service/super_service.dart';
 
-import '../products/actualizar.dart';
 import '../products/registrarP.dart';
 import '../products/seleccionarP.dart';
 
@@ -41,106 +41,145 @@ class _GestionInventarioPageState extends State<GestionInventarioPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: SafeArea(
         child: Column(
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegistrarProductoPage()),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: const Text('Registrar Productos'),
-            ),
-            const SizedBox(height: 16),
-            Container(
+            // 🔹 Botón Registrar Productos
+            Padding(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Total de Referencias'),
-                      Text('${_productos.length}'),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Costo Total'),
-                      Text('L${_productos.fold<double>(0, (sum, p) => sum + p.costo)}'),
-                    ],
-                  ),
-                ],
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CrearProductoScreen(nombreProducto: ''),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  child: const Text('Registrar Productos'),
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            ..._productos.map((producto) {
-              return Container(
+
+            // 🔹 Resumen
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
                 padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEDEFFF),
-                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(producto.nombre, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            Text("Precio: L${producto.precio.toStringAsFixed(2)}"),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            // Acción eliminar producto
-                          },
-                        ),
+                        const Text('Total de Referencias'),
+                        Text('${_productos.length}'),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Stock Disponible"),
-                        Text('${producto.stock}'),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductSelectionScreen()));
-                          },
-                          child: const Text("Actualizar Producto"),
-                        ),
-                        OutlinedButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const CrearProductoScreen()));
-                          },
-                          child: const Text("Editar Producto"),
-                        ),
-                      ],
-                    ),
+     
+  
                   ],
                 ),
-              );
-            }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // 🔹 Lista de productos
+            Expanded(
+              child: ListView.builder(
+                itemCount: _productos.length,
+                itemBuilder: (context, index) {
+                  final producto = _productos[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEDEFFF),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 🔹 Encabezado con nombre y eliminar
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      producto.nombre,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      "Precio: L${producto.precio.toStringAsFixed(2)}",
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  // Acción eliminar producto (opcional)
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // 🔹 Stock
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text("Stock Disponible"),
+                              Text('${producto.stock}'),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // 🔹 Botones
+                          Row(
+                            children: [
+                             
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ActualizarProductosScreen(
+                                          nombreProducto: producto.nombre,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text("Editar"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),

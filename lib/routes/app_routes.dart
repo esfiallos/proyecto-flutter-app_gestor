@@ -81,7 +81,7 @@ class AppRoutes {
         case misProductos:
         return MaterialPageRoute(builder: (_) => const MyProducts());
         case registrarProducto:
-        return MaterialPageRoute(builder: (_) => const RegistrarProductoPage());
+        return MaterialPageRoute(builder: (_) => const CrearProductoScreen(nombreProducto: '',));
         case gestioInventario:
         return MaterialPageRoute(builder: (_) => const GestionInventarioPage());
         case logOut:

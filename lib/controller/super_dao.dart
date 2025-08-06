@@ -90,10 +90,16 @@ class ProductoDAO {
 
   }
 
-  static Future<int> update(Producto p) async {
-    final db = await DatabaseHelper.instance.database;
-    return await db.update('Productos', p.toMap(), where: 'codigo = ?', whereArgs: [p.codigo]);
-  }
+ static Future<int> update(Producto p) async {
+  final db = await DatabaseHelper.instance.database;
+  return await db.update(
+    'Productos',
+    p.toMap(excludeId: true),  // Excluye id_producto para no actualizarlo
+    where: 'codigo = ?',
+    whereArgs: [p.codigo],
+  );
+}
+
 
   static Future<int> delete(String codigo) async {
     final db = await DatabaseHelper.instance.database;

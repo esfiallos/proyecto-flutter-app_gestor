@@ -50,8 +50,8 @@ class Producto {
     imagen: map['imagen'],         // o puedes usar imagenSrc directamente
   );
 
-  Map<String, dynamic> toMap() => {
-    'id_producto': id,
+  Map<String, dynamic> toMap({bool excludeId = false}) {
+  final map = <String, dynamic>{
     'codigo': codigo,
     'nombre': nombre,
     'precio': precio,
@@ -63,4 +63,12 @@ class Producto {
     'metodo_pago': metodoPago,
     'id_categoria': idCategoria,
   };
+  
+  if (!excludeId && id != null) {
+    map['id_producto'] = id;
+  }
+  
+  return map;
+}
+
 }

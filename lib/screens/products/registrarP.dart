@@ -1,112 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:miki/bd/databasehelper.dart';
+import 'package:miki/models/productos.dart';
 import 'package:miki/models/categoria.dart';
 import 'package:miki/service/super_service.dart';
 
-class RegistrarProductoPage extends StatefulWidget {
-  const RegistrarProductoPage({super.key});
+class CrearProductoScreen extends StatefulWidget {
+  final String nombreProducto;
+
+  const CrearProductoScreen({super.key, required this.nombreProducto});
 
   @override
-  State<RegistrarProductoPage> createState() => _RegistrarProductoPageState();
+  State<CrearProductoScreen> createState() => _CrearProductoScreenState();
 }
 
-class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
+class _CrearProductoScreenState extends State<CrearProductoScreen> {
+  final _formKey = GlobalKey<FormState>();
   final AppService _appService = AppService();
-  final TextEditingController nombreController = TextEditingController();
-  final TextEditingController cantidadController = TextEditingController();
-  final TextEditingController precioController = TextEditingController();
-  final TextEditingController costoController = TextEditingController();
-  final TextEditingController descripcionController = TextEditingController();
-  final TextEditingController fechaVencimientoController = TextEditingController();
 
-  bool mostrarFecha = false;
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _stockController = TextEditingController();
+  final TextEditingController _precioController = TextEditingController();
+  final TextEditingController _costoController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
 
-  List<Categoria> _categorias = [];
+  String? _codigoProducto;
   Categoria? _categoriaSeleccionada;
+  List<Categoria> _categorias = [];
 
   @override
   void initState() {
     super.initState();
-    _cargarCategorias();
+    _cargarCategoriasYProducto();
   }
 
-  Future<void> _cargarCategorias() async {
-    final cats = await _appService.obtenerCategorias();
-    setState(() {
-      // Añade una opción por defecto al inicio
-      _categorias = [Categoria(id: null, nombre: 'Selecciona una opción'), ...cats];
-      _categoriaSeleccionada = _categorias.first;
-    });
-  }
+  Future<void> _cargarCategoriasYProducto() async {
+    final categorias = await _appService.obtenerCategorias();
+    final productos = await _appService.buscarProductosPorNombre(widget.nombreProducto);
 
-  @override
-  void dispose() {
-    nombreController.dispose();
-    cantidadController.dispose();
-    precioController.dispose();
-    costoController.dispose();
-    descripcionController.dispose();
-    fechaVencimientoController.dispose();
-    super.dispose();
-  }
+    if (productos.isNotEmpty) {
+      final producto = productos.first;
 
-  Future<void> _seleccionarFecha(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2023),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
       setState(() {
-        fechaVencimientoController.text =
-            "${picked.year}-${picked.month.toString().padLeft(2,'0')}-${picked.day.toString().padLeft(2,'0')}";
+        _codigoProducto = producto.codigo;
+        _nombreController.text = producto.nombre;
+        _stockController.text = producto.stock.toString();
+        _precioController.text = producto.precio.toString();
+        _costoController.text = producto.costo.toString();
+        _descripcionController.text = producto.descripcion ?? '';
+        _categorias = categorias;
+        _categoriaSeleccionada = categorias.firstWhere(
+          (cat) => cat.id == producto.idCategoria,
+          orElse: () => Categoria(id: null, nombre: "Sin categoría"),
+        );
       });
     }
   }
 
-  Future<void> _crearProducto() async {
-    if (nombreController.text.isEmpty ||
-        cantidadController.text.isEmpty ||
-        precioController.text.isEmpty ||
-        costoController.text.isEmpty ||
-        _categoriaSeleccionada == null ||
-        _categoriaSeleccionada!.id == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, completa todos los campos')),
-      );
-      return;
-    }
+  Future<void> _actualizarProducto() async {
+    if (_codigoProducto == null || _categoriaSeleccionada == null) return;
 
-    final db = await DatabaseHelper.instance.database;
-
-    await db.insert(
-      'Productos',
-      {
-        'codigo': DateTime.now().millisecondsSinceEpoch.toString(),
-        'nombre': nombreController.text,
-        'stock': int.tryParse(cantidadController.text) ?? 0,
-        'precio': double.tryParse(precioController.text) ?? 0.0,
-        'costo': double.tryParse(costoController.text) ?? 0.0,
-        'descripcion': descripcionController.text,
-        'fecha_vencimiento':
-            mostrarFecha ? fechaVencimientoController.text : null,
-        'imagen_src': '',
-        'metodo_pago': '',
-        'id_categoria': _categoriaSeleccionada!.id,
-      },
+    final producto = Producto(
+      codigo: _codigoProducto!,
+      nombre: _nombreController.text,
+      stock: int.tryParse(_stockController.text) ?? 0,
+      precio: double.tryParse(_precioController.text) ?? 0.0,
+      costo: double.tryParse(_costoController.text) ?? 0.0,
+      descripcion: _descripcionController.text,
+      imagenSrc: '',
+      metodoPago: '',
+      fechaVencimiento: '',
+      idCategoria: _categoriaSeleccionada!.id!,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Producto creado exitosamente')),
-    );
-    Navigator.pop(context);
+    await _appService.actualizarProducto(producto);
+    if (mounted) Navigator.pop(context);
+  }
+
+  Future<void> _eliminarProducto() async {
+    if (_codigoProducto == null) return;
+    await _appService.eliminarProducto(_codigoProducto!);
+    if (mounted) Navigator.pop(context);
   }
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      border: const OutlineInputBorder(),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
     );
   }
@@ -115,8 +93,8 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrar Producto'),
-        backgroundColor: Colors.blue,
+        title: const Text("Actualizar Producto"),
+        backgroundColor: Colors.blue[400],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -125,95 +103,91 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
       body: _categorias.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const Icon(Icons.upload_file,
-                      size: 70, color: Colors.black54),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: nombreController,
-                    decoration: _inputDecoration('Nombre del Producto'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: cantidadController,
-                    keyboardType: TextInputType.number,
-                    decoration: _inputDecoration('Cantidad Disponible'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: precioController,
-                    keyboardType: TextInputType.number,
-                    decoration: _inputDecoration('Precio'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: costoController,
-                    keyboardType: TextInputType.number,
-                    decoration: _inputDecoration('Costo'),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<Categoria>(
-                    value: _categoriaSeleccionada,
-                    decoration: _inputDecoration('Categoría'),
-                    items: _categorias.map((cat) {
-                      return DropdownMenuItem<Categoria>(
-                        value: cat,
-                        child: Text(cat.nombre),
-                      );
-                    }).toList(),
-                    onChanged: (cat) {
-                      setState(() {
-                        _categoriaSeleccionada = cat;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: descripcionController,
-                    decoration: _inputDecoration('Descripción'),
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: mostrarFecha,
-                        onChanged: (v) {
-                          setState(() {
-                            mostrarFecha = v ?? false;
-                            if (!mostrarFecha) {
-                              fechaVencimientoController.clear();
-                            }
-                          });
-                        },
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const Icon(Icons.upload_file, size: 70, color: Colors.black54),
+                    const SizedBox(height: 20),
+
+                    TextFormField(
+                      controller: _nombreController,
+                      decoration: _inputDecoration("Nombre del Producto"),
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: _stockController,
+                      keyboardType: TextInputType.number,
+                      decoration: _inputDecoration("Cantidad Disponible"),
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: _precioController,
+                      keyboardType: TextInputType.number,
+                      decoration: _inputDecoration("Precio"),
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: _costoController,
+                      keyboardType: TextInputType.number,
+                      decoration: _inputDecoration("Costo"),
+                    ),
+                    const SizedBox(height: 10),
+
+                    DropdownButtonFormField<Categoria>(
+                      value: _categoriaSeleccionada,
+                      decoration: _inputDecoration("Categoría"),
+                      items: _categorias.map((cat) {
+                        return DropdownMenuItem(
+                          value: cat,
+                          child: Text(cat.nombre),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _categoriaSeleccionada = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      controller: _descripcionController,
+                      maxLines: 3,
+                      decoration: _inputDecoration("Descripción"),
+                    ),
+                    const SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _actualizarProducto,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[400],
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child: const Text("Actualizar Producto"),
                       ),
-                      const Text('¿Agregar fecha de vencimiento?'),
-                    ],
-                  ),
-                  if (mostrarFecha) ...[
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: fechaVencimientoController,
-                      readOnly: true,
-                      onTap: () => _seleccionarFecha(context),
-                      decoration: _inputDecoration('Fecha de Vencimiento'),
+                    ),
+                    const SizedBox(height: 10),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _eliminarProducto,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child: const Text("Eliminar Producto"),
+                      ),
                     ),
                   ],
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _crearProducto,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('Crear Producto'),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
     );
