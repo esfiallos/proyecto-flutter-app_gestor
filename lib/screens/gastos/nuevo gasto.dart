@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miki/models/gasto.dart';
+import 'package:miki/screens/gastos/comprobante_gasto.dart';
 import 'package:miki/service/super_service.dart';
 
 class NuevoGasto extends StatefulWidget {
@@ -52,7 +53,13 @@ class _NuevoGastoState extends State<NuevoGasto> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => GastoConfirmado(valor: valor.toStringAsFixed(2)),
+           builder: (_) => GastoConfirmado(
+          nombre: nombre,
+          concepto: concepto,
+          metodoPago: metodoPago,
+          valor: valor.toStringAsFixed(2),
+          fecha: DateTime.now().toIso8601String().substring(0, 10),
+          ),
         ),
       );
     } catch (e) {
@@ -171,55 +178,85 @@ class _NuevoGastoState extends State<NuevoGasto> {
   }
 }
 
+
 class GastoConfirmado extends StatelessWidget {
+  final String nombre;
+  final String concepto;
+  final String metodoPago;
   final String valor;
-  const GastoConfirmado({super.key, required this.valor});
+  final String fecha;
+
+  const GastoConfirmado({
+    super.key,
+    required this.nombre,
+    required this.concepto,
+    required this.metodoPago,
+    required this.valor,
+    required this.fecha,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red[600],
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.check_circle_outline, color: Colors.white, size: 100),
-              SizedBox(height: 16),
-              Text(
-                "!Creaste un Gasto!",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 100),
+            const Icon(Icons.check_circle, size: 100, color: Colors.green),
+            const SizedBox(height: 24),
+            const Text(
+              "Gasto Registrado",
+              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Valor: L $valor",
+              style: const TextStyle(color: Colors.white70, fontSize: 18),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/balance');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    child: const Text("Ver Balance"),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ComprobanteGasto(
+                            nombre: nombre,
+                            concepto: concepto,
+                            metodoPago: metodoPago,
+                            valor: valor,
+                            fecha: fecha,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    child: const Text("Ver Comprobante"),
+                  ),
+                ],
               ),
-              SizedBox(height: 12),
-              Text(
-                "Se registró en un balance por el monto de L $valor",
-                style: TextStyle(color: Colors.white70),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                child: Text("Ver Balance"),
-              ),
-              SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                child: Text("Ver Comportamiento"),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 32),
+          ],
         ),
       ),
     );
