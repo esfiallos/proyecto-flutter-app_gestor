@@ -77,7 +77,7 @@ class _InventarioPageState extends State<InventarioPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text('Registrar Producto'),
+              child: const Text('Registrar Producto', selectionColor: Colors.white),
             ),
           ),
           Padding(
@@ -98,14 +98,7 @@ class _InventarioPageState extends State<InventarioPage> {
                       Text('${_productos.length}'),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Costo Total', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text('L${_productos.fold<double>(0, (sum, p) => sum + p.costo)}'),
-                    ],
-                  ),
+                 
                 ],
               ),
             ),
