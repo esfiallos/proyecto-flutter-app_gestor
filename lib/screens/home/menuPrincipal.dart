@@ -102,9 +102,6 @@ Future<void> cargarDatos() async {
                     ),
                     const SizedBox(height: 20),
 
-                    // FILTRO
-                    filtroMesSemanaDia(),
-
                     // PRODUCTOS
                     ...productos.map((p) => ProductoWidget(producto: p)),
 
@@ -125,30 +122,6 @@ Future<void> cargarDatos() async {
     );
   }
 
-  Widget filtroMesSemanaDia() {
-    return Container(
-      height: 45,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          TextButton(onPressed: () {}, child: const Text("Día")),
-          TextButton(onPressed: () {}, child: const Text("Semana")),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1B4CE0),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            child: const Text("Mes", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget accesosRapidos() {
   return Row(
