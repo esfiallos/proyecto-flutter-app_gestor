@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miki/models/categoria.dart';
 import 'package:miki/models/productos.dart';
+import 'package:miki/screens/home/menuPrincipal.dart';
 import 'package:miki/service/super_service.dart';
 
 class ActualizarProductosScreen extends StatefulWidget {
@@ -65,7 +66,7 @@ class _ActualizarProductosScreenState extends State<ActualizarProductosScreen> {
         backgroundColor: Colors.blue[400],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.popUntil(context, ModalRoute.withName('/menuPrincipal'))
         ),
       ),
       body: SingleChildScrollView(

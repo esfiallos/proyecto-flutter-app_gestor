@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:miki/models/gasto.dart';
+import 'package:miki/service/super_service.dart';
 
 class NuevoGasto extends StatefulWidget {
   const NuevoGasto({super.key});
@@ -8,6 +10,8 @@ class NuevoGasto extends StatefulWidget {
 }
 
 class _NuevoGastoState extends State<NuevoGasto> {
+  final AppService _service = AppService();
+
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController valorController = TextEditingController();
   final TextEditingController conceptoController = TextEditingController();
@@ -20,6 +24,44 @@ class _NuevoGastoState extends State<NuevoGasto> {
   final List<String> subcategorias = ['Cine', 'Restaurante', 'Agua', 'Luz'];
   final List<String> metodosPago = ['Efectivo', 'Tarjeta', 'Transferencia'];
 
+  Future<void> _guardarGasto() async {
+    final nombre = nombreController.text.trim();
+    final concepto = conceptoController.text.trim();
+    final valor = double.tryParse(valorController.text.trim());
+
+    if (nombre.isEmpty || concepto.isEmpty || valor == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, completa todos los campos válidos')),
+      );
+      return;
+    }
+
+    final nuevoGasto = Gasto(
+      valor: valor,
+      metodoPago: metodoPago,
+      concepto: concepto,
+      // Si quieres usar subcategoría como idProducto, aquí debes convertirlo
+      idProducto: null,
+      cantidad: 1,
+      fecha: DateTime.now().toIso8601String(),
+    );
+
+    try {
+      await _service.registrarGasto(nuevoGasto);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => GastoConfirmado(valor: valor.toStringAsFixed(2)),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar el gasto: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +71,7 @@ class _NuevoGastoState extends State<NuevoGasto> {
         actions: [
           IconButton(
             icon: Icon(Icons.close),
-            onPressed: () {}, // Acción de cerrar
+            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -39,20 +81,14 @@ class _NuevoGastoState extends State<NuevoGasto> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Nombre del Gasto",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text("Nombre del Gasto", style: TextStyle(fontWeight: FontWeight.bold)),
             TextField(
               controller: nombreController,
               decoration: InputDecoration(border: OutlineInputBorder()),
             ),
             SizedBox(height: 16),
 
-            Text(
-              "Categoría del Gasto",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text("Categoría del Gasto", style: TextStyle(fontWeight: FontWeight.bold)),
             DropdownButtonFormField<String>(
               value: categoriaSeleccionada,
               items: categorias
@@ -69,8 +105,7 @@ class _NuevoGastoState extends State<NuevoGasto> {
               items: subcategorias
                   .map((sub) => DropdownMenuItem(value: sub, child: Text(sub)))
                   .toList(),
-              onChanged: (val) =>
-                  setState(() => subcategoriaSeleccionada = val),
+              onChanged: (val) => setState(() => subcategoriaSeleccionada = val),
               decoration: InputDecoration(border: OutlineInputBorder()),
             ),
             SizedBox(height: 16),
@@ -86,10 +121,7 @@ class _NuevoGastoState extends State<NuevoGasto> {
             ),
             SizedBox(height: 16),
 
-            Text(
-              "Método de Pago",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text("Método de Pago", style: TextStyle(fontWeight: FontWeight.bold)),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -102,8 +134,8 @@ class _NuevoGastoState extends State<NuevoGasto> {
                         m == 'Efectivo'
                             ? Icons.money
                             : m == 'Tarjeta'
-                            ? Icons.credit_card
-                            : Icons.account_balance,
+                                ? Icons.credit_card
+                                : Icons.account_balance,
                       ),
                       SizedBox(width: 2),
                       Text(m),
@@ -127,15 +159,7 @@ class _NuevoGastoState extends State<NuevoGasto> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          GastoConfirmado(valor: valorController.text),
-                    ),
-                  );
-                },
+                onPressed: _guardarGasto,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                 child: Text("Crear Gasto"),
               ),
@@ -180,13 +204,17 @@ class GastoConfirmado extends StatelessWidget {
               ),
               SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 child: Text("Ver Balance"),
               ),
               SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 child: Text("Ver Comportamiento"),
               ),

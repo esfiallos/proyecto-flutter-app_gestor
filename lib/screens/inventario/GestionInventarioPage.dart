@@ -54,7 +54,7 @@ class _GestionInventarioPageState extends State<GestionInventarioPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CrearProductoScreen(nombreProducto: ''),
+                        builder: (context) => const CrearProductoScreen(),
                       ),
                     );
                   },

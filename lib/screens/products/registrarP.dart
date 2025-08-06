@@ -4,9 +4,7 @@ import 'package:miki/models/categoria.dart';
 import 'package:miki/service/super_service.dart';
 
 class CrearProductoScreen extends StatefulWidget {
-  final String nombreProducto;
-
-  const CrearProductoScreen({super.key, required this.nombreProducto});
+  const CrearProductoScreen({super.key});
 
   @override
   State<CrearProductoScreen> createState() => _CrearProductoScreenState();
@@ -16,69 +14,53 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
   final _formKey = GlobalKey<FormState>();
   final AppService _appService = AppService();
 
+  final TextEditingController _codigoController = TextEditingController();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _costoController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
 
-  String? _codigoProducto;
   Categoria? _categoriaSeleccionada;
   List<Categoria> _categorias = [];
 
   @override
   void initState() {
     super.initState();
-    _cargarCategoriasYProducto();
+    _cargarCategorias();
   }
 
-  Future<void> _cargarCategoriasYProducto() async {
+  Future<void> _cargarCategorias() async {
     final categorias = await _appService.obtenerCategorias();
-    final productos = await _appService.buscarProductosPorNombre(widget.nombreProducto);
-
-    if (productos.isNotEmpty) {
-      final producto = productos.first;
-
-      setState(() {
-        _codigoProducto = producto.codigo;
-        _nombreController.text = producto.nombre;
-        _stockController.text = producto.stock.toString();
-        _precioController.text = producto.precio.toString();
-        _costoController.text = producto.costo.toString();
-        _descripcionController.text = producto.descripcion ?? '';
-        _categorias = categorias;
-        _categoriaSeleccionada = categorias.firstWhere(
-          (cat) => cat.id == producto.idCategoria,
-          orElse: () => Categoria(id: null, nombre: "Sin categoría"),
-        );
-      });
-    }
+    setState(() {
+      _categorias = categorias;
+    });
   }
 
-  Future<void> _actualizarProducto() async {
-    if (_codigoProducto == null || _categoriaSeleccionada == null) return;
+  Future<void> _registrarProducto() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (_categoriaSeleccionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona una categoría')),
+      );
+      return;
+    }
 
     final producto = Producto(
-      codigo: _codigoProducto!,
-      nombre: _nombreController.text,
+      codigo: _codigoController.text.trim(),
+      nombre: _nombreController.text.trim(),
       stock: int.tryParse(_stockController.text) ?? 0,
       precio: double.tryParse(_precioController.text) ?? 0.0,
       costo: double.tryParse(_costoController.text) ?? 0.0,
-      descripcion: _descripcionController.text,
+      descripcion: _descripcionController.text.trim(),
       imagenSrc: '',
       metodoPago: '',
       fechaVencimiento: '',
       idCategoria: _categoriaSeleccionada!.id!,
     );
 
-    await _appService.actualizarProducto(producto);
-    if (mounted) Navigator.pop(context);
-  }
-
-  Future<void> _eliminarProducto() async {
-    if (_codigoProducto == null) return;
-    await _appService.eliminarProducto(_codigoProducto!);
-    if (mounted) Navigator.pop(context);
+    await _appService.registrarProducto(producto);
+    if (mounted) Navigator.pop(context); // Volver al listado u otra pantalla
   }
 
   InputDecoration _inputDecoration(String label) {
@@ -93,7 +75,7 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Actualizar Producto"),
+        title: const Text("Registrar Producto"),
         backgroundColor: Colors.blue[400],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -108,12 +90,22 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const Icon(Icons.upload_file, size: 70, color: Colors.black54),
+                    const Icon(Icons.add_box, size: 70, color: Colors.black54),
                     const SizedBox(height: 20),
+
+                    TextFormField(
+                      controller: _codigoController,
+                      decoration: _inputDecoration("Código del Producto"),
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Requerido' : null,
+                    ),
+                    const SizedBox(height: 10),
 
                     TextFormField(
                       controller: _nombreController,
                       decoration: _inputDecoration("Nombre del Producto"),
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Requerido' : null,
                     ),
                     const SizedBox(height: 10),
 
@@ -121,6 +113,9 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       controller: _stockController,
                       keyboardType: TextInputType.number,
                       decoration: _inputDecoration("Cantidad Disponible"),
+                      validator: (value) => int.tryParse(value ?? '') == null
+                          ? 'Número inválido'
+                          : null,
                     ),
                     const SizedBox(height: 10),
 
@@ -128,6 +123,9 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       controller: _precioController,
                       keyboardType: TextInputType.number,
                       decoration: _inputDecoration("Precio"),
+                      validator: (value) => double.tryParse(value ?? '') == null
+                          ? 'Número inválido'
+                          : null,
                     ),
                     const SizedBox(height: 10),
 
@@ -135,6 +133,9 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       controller: _costoController,
                       keyboardType: TextInputType.number,
                       decoration: _inputDecoration("Costo"),
+                      validator: (value) => double.tryParse(value ?? '') == null
+                          ? 'Número inválido'
+                          : null,
                     ),
                     const SizedBox(height: 10),
 
@@ -165,25 +166,12 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _actualizarProducto,
+                        onPressed: _registrarProducto,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[400],
+                          backgroundColor: Colors.green,
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
-                        child: const Text("Actualizar Producto"),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _eliminarProducto,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                        child: const Text("Eliminar Producto"),
+                        child: const Text("Registrar Producto"),
                       ),
                     ),
                   ],
