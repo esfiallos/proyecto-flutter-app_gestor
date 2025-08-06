@@ -66,18 +66,36 @@ class _InventarioPageState extends State<InventarioPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/registrar-producto');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/registrar-producto');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Registrar Producto', selectionColor: Colors.white),
                 ),
-              ),
-              child: const Text('Registrar Producto', selectionColor: Colors.white),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/gestion-inventario');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Editar Inventario', selectionColor: Colors.white),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -88,17 +106,11 @@ class _InventarioPageState extends State<InventarioPage> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Total de Referencias', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text('${_productos.length}'),
-                    ],
-                  ),
-                 
+                  const Text('Total de Referencias', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('${_productos.length}'),
                 ],
               ),
             ),
@@ -164,23 +176,18 @@ class _InventarioPageState extends State<InventarioPage> {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pushReplacementNamed(context, '/gestion-inventario');
-                                },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      producto.nombre,
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text('Stock: ${producto.stock}'),
-                                    Text('Precio: L${producto.precio.toStringAsFixed(2)}'),
-                                    Text('Categoría: ${_getNombreCategoria(producto.idCategoria)}'),
-                                  ],
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    producto.nombre,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text('Stock: ${producto.stock}'),
+                                  Text('Precio: L${producto.precio.toStringAsFixed(2)}'),
+                                  Text('Categoría: ${_getNombreCategoria(producto.idCategoria)}'),
+                                ],
                               ),
                             ),
                           ],
