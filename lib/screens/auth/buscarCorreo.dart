@@ -1,117 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:miki/screens/auth/restablecerContrasena.dart';
+import 'package:miki/service/super_service.dart';
+import 'package:miki/models/usuario.dart';
 
-class BuscarCorreo extends StatelessWidget {
-  const BuscarCorreo({super.key});
+class BuscarCorreoScreen extends StatefulWidget {
+  const BuscarCorreoScreen({super.key});
+
+  @override
+  State<BuscarCorreoScreen> createState() => _BuscarCorreoScreenState();
+}
+
+class _BuscarCorreoScreenState extends State<BuscarCorreoScreen> {
+  final _correoCtrl = TextEditingController();
+  final AppService _service = AppService();
+
+  void _verificarCorreo() async {
+    final correo = _correoCtrl.text.trim();
+
+    if (correo.isEmpty) {
+      _mostrarMensaje('Ingresa tu correo.');
+      return;
+    }
+
+    final usuario = await _service.obtenerCorreoPorCorreo(correo);
+
+    if (usuario == null) {
+      _mostrarMensaje('Correo no encontrado.');
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RestablecerContrasenaScreen(usuario: usuario),
+        ),
+      );
+    }
+  }
+
+  void _mostrarMensaje(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -140,
-                left: -140,
-                child: Container(
-                  height: 280,
-                  width: 280,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF8A2BE2),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-
-              Positioned(
-                bottom: -120,
-                right: -120,
-                child: Container(
-                  height: 280,
-                  width: 280,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF007BFF),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 60),
-                      Center(
-                        child: ShaderMask(
-                          shaderCallback: (bounds) => const LinearGradient(
-                            colors: [
-                              Color(0xFF007BFF),
-                              Color(0xFF8A2BE2),
-                            ],
-                          ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
-                          child: const Text(
-                            'Buscar Correo',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Center(
-                        child: Image.asset(
-                          'assets/BuscarCorreo.jpg',
-                          height: 300,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      const Text(
-                        "Escriba su correo",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                      const SizedBox(height: 8),
-                      const TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/restablecer-contrasena');
-                            
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF007BFF),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: const Text(
-                            "Confirmar",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+      appBar: AppBar(title: const Text('Recuperar Cuenta')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              controller: _correoCtrl,
+              decoration: const InputDecoration(labelText: 'Correo registrado'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _verificarCorreo,
+              child: const Text('Verificar correo'),
+            ),
+          ],
         ),
       ),
     );

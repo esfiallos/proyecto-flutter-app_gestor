@@ -6,24 +6,23 @@ import 'package:miki/screens/auth/inicio.dart';
 import 'package:miki/screens/auth/lugar.dart';
 import 'package:miki/screens/auth/restablecerContrasena.dart';
 import 'package:miki/screens/estadistica/balance.dart';
+import 'package:miki/screens/gastos/nuevo%20gasto.dart';
 import 'package:miki/screens/home/log_out.dart';
-import 'package:miki/screens/home/menuPrincipal.dart';
+import 'package:miki/screens/home/menuPrincipal.dart' as home_menu;
 import 'package:miki/screens/auth/login.dart';
 import 'package:miki/screens/inventario/GestionInventarioPage.dart';
 import 'package:miki/screens/inventario/inventario.dart';
-import 'package:miki/screens/inventario/nuevo%20gasto.dart';
-import 'package:miki/screens/products/My_Products.dart';
 import 'package:miki/screens/products/categorias.dart';
 import 'package:miki/screens/products/registrarP.dart';
+import 'package:miki/screens/profile/My_Products.dart';
 import 'package:miki/screens/profile/edit_profile.dart';
 import 'package:miki/screens/profile/profile.dart';
-import 'package:miki/main.dart'; 
 import 'package:miki/screens/estadistica/statistics.dart';
+
 
 class AppRoutes {
   static const String home = '/';
   static const String login = '/login';
-  static const String menu = '/menu';
   static const String productos = '/productos';
   static const String perfil = '/perfil';
   static const String lugar = '/lugar';
@@ -50,11 +49,9 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
-        return MaterialPageRoute(builder: (_) => const menuPrincipal());
+        return MaterialPageRoute(builder: (_) => const home_menu.MenuPrincipal());
       case login:
         return MaterialPageRoute(builder: (_) => const Login());
-      case menu:
-        return MaterialPageRoute(builder: (_) => const menuPrincipal());
       case productos:
         return MaterialPageRoute(builder: (_) => const MyProducts());
       case perfil:
@@ -66,13 +63,13 @@ class AppRoutes {
         case bienvenida:
         return MaterialPageRoute(builder: (_) => const Bienvenida());
         case buscarCorreo:
-        return MaterialPageRoute(builder: (_) => const BuscarCorreo());
+        return MaterialPageRoute(builder: (_) => const BuscarCorreoScreen());
         case creacionCuenta:
-        return MaterialPageRoute(builder: (_) => const CreacionCuenta());
-        case restablecerContrasena:
-        return MaterialPageRoute(builder: (_) => const RestablecerContrasena());
+               return MaterialPageRoute(builder: (_) => const CreacionCuentaScreen());
+
         case estadistica:
-        return MaterialPageRoute(builder: (_) => const Statistics());
+                return MaterialPageRoute(builder: (_) => const StatisticsScreen());
+
         case balance:
         return MaterialPageRoute(builder: (_) => const Balance());
         case inventario:
@@ -84,7 +81,7 @@ class AppRoutes {
         case misProductos:
         return MaterialPageRoute(builder: (_) => const MyProducts());
         case registrarProducto:
-        return MaterialPageRoute(builder: (_) => const RegistrarProductoPage());
+        return MaterialPageRoute(builder: (_) => const CrearProductoScreen());
         case gestioInventario:
         return MaterialPageRoute(builder: (_) => const GestionInventarioPage());
         case logOut:

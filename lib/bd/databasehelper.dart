@@ -201,12 +201,21 @@ class DatabaseHelper {
       LIMIT 1;
     ''');
 
+    // Elimina si existe para evitar errores si recreas la DB
+    await db.execute('DROP VIEW IF EXISTS View_StockProductos;');
+
+    // Nueva definición de la vista incluyendo id_categoria e imagen_src
     await db.execute('''
-      CREATE VIEW View_StockProductos AS
-      SELECT nombre, stock, precio, costo
-      FROM Productos
-      ORDER BY stock ASC;
-    ''');
+    CREATE VIEW View_StockProductos AS
+    SELECT
+      nombre,
+      stock,
+      precio,
+      costo,
+      id_categoria
+    FROM Productos
+    ORDER BY stock ASC;
+  ''');
   }
 
   Future close() async {

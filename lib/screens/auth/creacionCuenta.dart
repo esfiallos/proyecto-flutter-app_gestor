@@ -1,157 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:miki/models/usuario.dart';
+import 'package:miki/service/super_service.dart';
 
-
-class CreacionCuenta extends StatelessWidget {
-  const CreacionCuenta({super.key});
+class CreacionCuentaScreen extends StatefulWidget {
+  const CreacionCuentaScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black87,
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.white,
+  State<CreacionCuentaScreen> createState() => _CreacionCuentaScreenState();
+}
+
+class _CreacionCuentaScreenState extends State<CreacionCuentaScreen> {
+  final _nombreCtrl = TextEditingController();
+  final _apellidoCtrl = TextEditingController();
+  final _correoCtrl = TextEditingController();
+  final _contrasenaCtrl = TextEditingController();
+
+  final AppService _service = AppService();
+
+  void _registrarUsuario() async {
+    final nombre = _nombreCtrl.text.trim();
+    final apellido = _apellidoCtrl.text.trim();
+    final correo = _correoCtrl.text.trim();
+    final contrasena = _contrasenaCtrl.text;
+
+    if (nombre.isEmpty || apellido.isEmpty || correo.isEmpty || contrasena.isEmpty) {
+      _mostrarDialogo('Error', 'Por favor completa todos los campos.');
+      return;
+    }
+
+    final existente = await _service.obtenerCorreoPorCorreo(correo);
+    if (existente != null) {
+      _mostrarDialogo('Correo en uso', 'Este correo ya está registrado.');
+      return;
+    }
+
+    final nuevoUsuario = Usuario(
+      nombre: nombre,
+      apellido: apellido,
+      correo: correo,
+      contrasena: contrasena,
+    );
+
+    await _service.registrarUsuario(nuevoUsuario);
+
+    if (!mounted) return;
+
+    // Mostrar mensaje de éxito y esperar confirmación del usuario
+    _mostrarDialogo(
+      'Cuenta creada',
+      'Tu cuenta fue creada con éxito.',
+  onAceptar: () {
+   Navigator.of(context).pop(); // cerrar el diálogo primero
+    Navigator.pushReplacementNamed(context, '/login'); // navegar al login
+  },
+    );
+  }
+
+  void _mostrarDialogo(String titulo, String mensaje, {VoidCallback? onAceptar}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(titulo),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el diálogo
+              if (onAceptar != null) {
+                onAceptar();
+              }
+            },
+            child: const Text('Aceptar'),
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -100,
-                left: -100,
-                child: Container(
-                  height: 200,
-                  width: 200,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF8A2BE2),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -80,
-                right: -80,
-                child: Container(
-                  height: 200,
-                  width: 200,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF007BFF),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      Center(
-                        child: ShaderMask(
-                          shaderCallback: (bounds) => const LinearGradient(
-                            colors: [
-                              Color(0xFF007BFF),
-                              Color(0xFF8A2BE2),
-                            ],
-                          ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
-                          child: const Text(
-                            'Crear Cuenta',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Center(
-                        child: Image.asset(
-                          'assets/creacionCuenta.jpg',
-                          height: 220,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      _buildLabel("NOMBRES"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
-
-                      _buildLabel("APELLIDOS"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
-
-                      _buildLabel("CORREO"),
-                      const TextField(
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
-
-                      _buildLabel("DESCRIPCIÓN BREVE"),
-                      const TextField(
-                        maxLines: 2,
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
-
-
-                      _buildLabel("CONTRASEÑA"),
-                      TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.visibility_off),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF007BFF),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: const Text(
-                            "Crear Cuenta",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildLabel(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
+  @override
+  void dispose() {
+    _nombreCtrl.dispose();
+    _apellidoCtrl.dispose();
+    _correoCtrl.dispose();
+    _contrasenaCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Crear Cuenta')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: ListView(
+          children: [
+            TextField(
+              controller: _nombreCtrl,
+              decoration: const InputDecoration(labelText: 'Nombre'),
+            ),
+            TextField(
+              controller: _apellidoCtrl,
+              decoration: const InputDecoration(labelText: 'Apellido'),
+            ),
+            TextField(
+              controller: _correoCtrl,
+              decoration: const InputDecoration(labelText: 'Correo'),
+            ),
+            TextField(
+              controller: _contrasenaCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Contraseña'),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _registrarUsuario,
+              child: const Text('Crear Cuenta'),
+            ),
+          ],
         ),
       ),
     );
