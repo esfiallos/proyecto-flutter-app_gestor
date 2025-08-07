@@ -66,7 +66,7 @@ class _ActualizarProductosScreenState extends State<ActualizarProductosScreen> {
         backgroundColor: Colors.blue[400],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.popUntil(context, ModalRoute.withName('/menuPrincipal'))
+          onPressed: () => Navigator.popUntil(context, ModalRoute.withName('/')),
         ),
       ),
       body: SingleChildScrollView(
