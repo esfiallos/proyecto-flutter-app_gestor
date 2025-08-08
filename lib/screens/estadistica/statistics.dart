@@ -3,7 +3,18 @@ import 'package:miki/models/views/producto_mas_vendido.dart';
 import 'package:miki/models/views/metodo_pago_mayor.dart';
 import 'package:miki/models/views/producto_masvendido_mes.dart';
 import 'package:miki/models/views/producto_menovendido_mes.dart';
-import 'package:fl_chart/fl_chart.dart' show BarChart, BarChartData, BarChartGroupData, BarChartRodData, FlTitlesData, AxisTitles, SideTitles, FlBorderData, FlGridData, BarChartAlignment;
+import 'package:fl_chart/fl_chart.dart'
+    show
+        BarChart,
+        BarChartData,
+        BarChartGroupData,
+        BarChartRodData,
+        FlTitlesData,
+        AxisTitles,
+        SideTitles,
+        FlBorderData,
+        FlGridData,
+        BarChartAlignment;
 import 'package:miki/service/super_service.dart';
 import 'package:miki/widgets/MenuBar.dart';
 
@@ -22,10 +33,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   final AppService _service = AppService();
   final List<String> _meses = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre'
   ];
   Set<String> _selectedMonth = {'Julio'};
+
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -34,17 +58,26 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> _cargarDatos() async {
-    final producto = await _service.obtenerProductoMasVendido();
-    final metodo = await _service.obtenerMetodoPagoMasUsado();
-    final vendidos = await _service.obtenerProductosMasVendidosPorMes();
-    final noVendidos = await _service.obtenerProductosMenosVendidosPorMes();
+    try {
+      final producto = await _service.obtenerProductoMasVendido();
+      final metodo = await _service.obtenerMetodoPagoMasUsado();
+      final vendidos = await _service.obtenerProductosMasVendidosPorMes();
+      final noVendidos = await _service.obtenerProductosMenosVendidosPorMes();
 
-    setState(() {
-      _productoMasVendido = producto;
-      _metodoPagoMasUsado = metodo;
-      _masVendidosPorMes = vendidos;
-      _menosVendidosPorMes = noVendidos;
-    });
+      setState(() {
+        _productoMasVendido = producto;
+        _metodoPagoMasUsado = metodo;
+        _masVendidosPorMes = vendidos;
+        _menosVendidosPorMes = noVendidos;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error cargando estadísticas: $e');
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+      });
+    }
   }
 
   Map<String, double> _filtrarVentasPorMes(List<dynamic> datos, String mes) {
@@ -57,19 +90,47 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     });
   }
 
-  Widget _buildInfoCard({required String label, required String value, required String subValue}) {
+  Widget _buildInfoCard({
+    required String label,
+    String? value,
+    String? subValue,
+  }) {
+    final bool noData = value == null || value.isEmpty || value == '0';
+
     return Card(
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         title: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subValue),
-        trailing: Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        subtitle: Text(noData ? 'No hay datos' : subValue ?? ''),
+        trailing: Text(
+          noData ? '-' : value!,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
-  Widget _buildChartSection({required String title, required Map<String, double> dataPoints, Color? chartColor}) {
+  Widget _buildChartSection({
+    required String title,
+    required Map<String, double> dataPoints,
+    Color? chartColor,
+  }) {
+    if (dataPoints.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const SizedBox(height: 8),
+          const Text('No hay datos para mostrar',
+              style: TextStyle(color: Colors.grey)),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -101,15 +162,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     showTitles: true,
                     getTitlesWidget: (value, _) {
                       final entry = dataPoints.keys.firstWhere(
-                          (key) => key.hashCode == value.toInt(),
-                          orElse: () => '');
-                      return Text(entry, style: const TextStyle(fontSize: 10), overflow: TextOverflow.ellipsis);
+                        (key) => key.hashCode == value.toInt(),
+                        orElse: () => '',
+                      );
+                      return Text(entry,
+                          style: const TextStyle(fontSize: 10),
+                          overflow: TextOverflow.ellipsis);
                     },
                   ),
                 ),
-                leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               borderData: FlBorderData(show: false),
               gridData: FlGridData(show: false),
@@ -122,7 +189,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Estadísticas')),
+        body: const Center(child: Text('Error al cargar las estadísticas')),
+      );
+    }
+
     final String mesActual = _selectedMonth.first;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Estadísticas')),
       body: Padding(
@@ -132,13 +213,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               _buildInfoCard(
                 label: 'El producto más vendido',
-                value: _productoMasVendido?.nombre ?? 'Sin datos',
-                subValue: 'Vendidas: ${_productoMasVendido?.totalVendido ?? 0}',
+                value: _productoMasVendido?.nombre,
+                subValue:
+                    'Vendidas: ${_productoMasVendido?.totalVendido ?? 0}',
               ),
               _buildInfoCard(
                 label: 'Método de pago más usado',
-                value: _metodoPagoMasUsado?.metodoPago ?? 'Sin ...',
-                subValue: '${_metodoPagoMasUsado?.totalUsos.toStringAsFixed(1) ?? 0}%',
+                value: _metodoPagoMasUsado?.metodoPago,
+                subValue:
+                    '${_metodoPagoMasUsado?.totalUsos.toStringAsFixed(1) ?? 0}%',
               ),
               const SizedBox(height: 16),
               Wrap(
@@ -147,7 +230,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 children: _meses.map((mes) {
                   final bool selected = _selectedMonth.contains(mes);
                   return ChoiceChip(
-                    label: Text(mes, style: TextStyle(color: selected ? Colors.white : Colors.black)),
+                    label: Text(mes,
+                        style: TextStyle(
+                            color: selected ? Colors.white : Colors.black)),
                     selected: selected,
                     onSelected: (bool selected) {
                       setState(() {
@@ -165,7 +250,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ),
               _buildChartSection(
                 title: 'Productos Menos Vendidos',
-                dataPoints: _filtrarVentasPorMes(_menosVendidosPorMes, mesActual),
+                dataPoints:
+                    _filtrarVentasPorMes(_menosVendidosPorMes, mesActual),
                 chartColor: Colors.lightBlue,
               ),
             ],
