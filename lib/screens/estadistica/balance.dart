@@ -20,6 +20,7 @@ class _BalancePageState extends State<Balance> {
   List<EgresosPorMetodoPago> egresosPorMetodo = [];
 
   bool isLoading = true;
+  bool hasError = false;
 
   @override
   void initState() {
@@ -29,9 +30,12 @@ class _BalancePageState extends State<Balance> {
 
   Future<void> cargarDatos() async {
     try {
-      final balance = await appService.obtenerBalance();
-      final ventas = await appService.obtenerVentasPorMetodoPago();
-      final egresos = await appService.obtenerEgresosPorMetodoPago();
+      // 🔹 Activa esta línea para insertar datos de prueba si no tienes ventas/gastos aún:
+      // await appService.insertarDatosPrueba();
+
+      final balance = await _obtenerBalanceSeguro();
+      final ventas = await _obtenerVentasSeguras();
+      final egresos = await _obtenerEgresosSeguros();
 
       setState(() {
         balanceGeneral = balance;
@@ -40,11 +44,40 @@ class _BalancePageState extends State<Balance> {
         isLoading = false;
       });
     } catch (e) {
-      // Manejar error, mostrar mensaje o log
+      debugPrint("Error cargando datos del balance: $e");
       setState(() {
         isLoading = false;
+        hasError = true;
       });
-      // Opcional: mostrar snackbar o diálogo
+    }
+  }
+
+  /// 🔹 Envuelve la llamada al AppService para que nunca devuelva null o falle
+  Future<BalanceGeneral> _obtenerBalanceSeguro() async {
+    try {
+      final balance = await appService.obtenerBalance();
+      return balance ??
+          BalanceGeneral(
+              totalIngresos: 0, totalEgresos: 0, balance: 0);
+    } catch (_) {
+      return BalanceGeneral(
+          totalIngresos: 0, totalEgresos: 0, balance: 0);
+    }
+  }
+
+  Future<List<VentasPorMetodoPago>> _obtenerVentasSeguras() async {
+    try {
+      return await appService.obtenerVentasPorMetodoPago();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<List<EgresosPorMetodoPago>> _obtenerEgresosSeguros() async {
+    try {
+      return await appService.obtenerEgresosPorMetodoPago();
+    } catch (_) {
+      return [];
     }
   }
 
@@ -53,6 +86,15 @@ class _BalancePageState extends State<Balance> {
     if (isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Balance')),
+        body: const Center(
+          child: Text('Ocurrió un error cargando los datos.'),
+        ),
       );
     }
 
@@ -77,7 +119,7 @@ class _BalancePageState extends State<Balance> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'L.${balanceGeneral?.balance.toStringAsFixed(2) ?? '0.00'}',
+              'L.${(balanceGeneral?.balance ?? 0).toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
@@ -95,79 +137,44 @@ class _BalancePageState extends State<Balance> {
                 _buildBalanceCard(
                   icon: Icons.arrow_outward,
                   label: 'Ingresos',
-                  amount: 'L.${balanceGeneral?.totalIngresos.toStringAsFixed(2) ?? '0.00'}',
+                  amount: 'L.${(balanceGeneral?.totalIngresos ?? 0).toStringAsFixed(2)}',
                   iconColor: Colors.blue,
                   amountColor: Colors.blue,
                 ),
                 _buildBalanceCard(
                   icon: Icons.arrow_downward,
                   label: 'Egresos',
-                  amount: 'L.${balanceGeneral?.totalEgresos.toStringAsFixed(2) ?? '0.00'}',
+                  amount: 'L.${(balanceGeneral?.totalEgresos ?? 0).toStringAsFixed(2)}',
                   iconColor: Colors.red,
                   amountColor: Colors.red,
                 ),
               ],
             ),
             const SizedBox(height: 30),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Resumen De Ingresos Por Método',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const Divider(height: 25, thickness: 1, color: Colors.grey),
-                  if (ventasPorMetodo.isEmpty)
-                    const Text('No hay datos de ingresos.'),
-                  ...ventasPorMetodo.map(
-                    (v) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(v.metodoPago),
-                      subtitle: Text('Ventas: ${v.cantidadVentas}'),
-                      trailing: Text('L.${v.total.toStringAsFixed(2)}'),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Resumen De Egresos Por Método',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const Divider(height: 25, thickness: 1, color: Colors.grey),
-                  if (egresosPorMetodo.isEmpty)
-                    const Text('No hay datos de egresos.'),
-                  ...egresosPorMetodo.map(
-                    (e) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(e.metodoPago),
-                      subtitle: Text('Gastos: ${e.cantidadGastos}'),
-                      trailing: Text('-L.${e.total.toStringAsFixed(2)}'),
-                    ),
-                  ),
-                ],
-              ),
+            _buildResumenMetodoPago(
+              titulo: 'Resumen De Ingresos Por Método',
+              vacioMensaje: 'No hay datos de ingresos.',
+              lista: ventasPorMetodo.map(
+                (v) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(v.metodoPago),
+                  subtitle: Text('Ventas: ${v.cantidadVentas}'),
+                  trailing: Text('L.${v.total.toStringAsFixed(2)}'),
+                ),
+              ).toList(),
+            ),
+            const SizedBox(height: 30),
+            _buildResumenMetodoPago(
+              titulo: 'Resumen De Egresos Por Método',
+              vacioMensaje: 'No hay datos de egresos.',
+              lista: egresosPorMetodo.map(
+                (e) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(e.metodoPago),
+                  subtitle: Text('Gastos: ${e.cantidadGastos}'),
+                  trailing: Text('-L.${e.total.toStringAsFixed(2)}'),
+                ),
+              ).toList(),
             ),
             const SizedBox(height: 30),
           ],
@@ -207,6 +214,47 @@ class _BalancePageState extends State<Balance> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildResumenMetodoPago({
+    required String titulo,
+    required String vacioMensaje,
+    required List<Widget> lista,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            titulo,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const Divider(height: 25, thickness: 1, color: Colors.grey),
+          if (lista.isEmpty)
+            Text(vacioMensaje)
+          else
+            ...lista,
+        ],
       ),
     );
   }
