@@ -9,9 +9,13 @@ class ProductoMenosVendidoPorMes {
     required this.cantidadTotal,
   });
 
-  factory ProductoMenosVendidoPorMes.fromMap(Map<String, dynamic> map) => ProductoMenosVendidoPorMes(
-    mes: map['mes'],
-    nombre: map['nombre'],
-    cantidadTotal: map['cantidad_total'],
-  );
+  factory ProductoMenosVendidoPorMes.fromMap(Map<String, dynamic> map) {
+    return ProductoMenosVendidoPorMes(
+      mes: map['mes']?.toString() ?? 'Desconocido',
+      nombre: map['nombre']?.toString() ?? 'Desconocido',
+      cantidadTotal: map['cantidad_total'] is int
+          ? map['cantidad_total']
+          : int.tryParse(map['cantidad_total']?.toString() ?? '') ?? 0,
+    );
+  }
 }

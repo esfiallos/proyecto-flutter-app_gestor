@@ -32,21 +32,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<ProductoMenosVendidoPorMes> _menosVendidosPorMes = [];
 
   final AppService _service = AppService();
-  final List<String> _meses = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre'
-  ];
-  Set<String> _selectedMonth = {'Julio'};
 
   bool _isLoading = true;
   bool _hasError = false;
@@ -60,9 +45,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Future<void> _cargarDatos() async {
     try {
       final producto = await _service.obtenerProductoMasVendido();
+      debugPrint('Producto más vendido cargado correctamente');
+
       final metodo = await _service.obtenerMetodoPagoMasUsado();
+      debugPrint('Método de pago cargado correctamente');
+
       final vendidos = await _service.obtenerProductosMasVendidosPorMes();
+      debugPrint('Productos más vendidos cargados correctamente');
+
       final noVendidos = await _service.obtenerProductosMenosVendidosPorMes();
+      debugPrint('Productos menos vendidos cargados correctamente');
 
       setState(() {
         _productoMasVendido = producto;
@@ -71,8 +63,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         _menosVendidosPorMes = noVendidos;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('Error cargando estadísticas: $e');
+      debugPrint('$stackTrace');
       setState(() {
         _isLoading = false;
         _hasError = true;
@@ -80,12 +73,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     }
   }
 
-  Map<String, double> _filtrarVentasPorMes(List<dynamic> datos, String mes) {
-    return datos
-        .where((e) => e.mes == mes)
-        .take(5)
-        .fold<Map<String, double>>({}, (map, e) {
-      map[e.nombre] = e.cantidad.toDouble();
+  Map<String, double> _filtrarVentasSinFiltro(List<dynamic> datos) {
+    return datos.take(5).fold<Map<String, double>>({}, (map, e) {
+      double cantidad;
+      if (e.cantidadTotal is int) {
+        cantidad = (e.cantidadTotal as int).toDouble();
+      } else if (e.cantidadTotal is double) {
+        cantidad = e.cantidadTotal;
+      } else {
+        cantidad = 0;
+      }
+      map[e.nombre] = cantidad;
       return map;
     });
   }
@@ -112,80 +110,80 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Widget _buildChartSection({
-    required String title,
-    required Map<String, double> dataPoints,
-    Color? chartColor,
-  }) {
-    if (dataPoints.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 8),
-          const Text('No hay datos para mostrar',
-              style: TextStyle(color: Colors.grey)),
-        ],
-      );
-    }
-
+  required String title,
+  required Map<String, double> dataPoints,
+  Color? chartColor,
+}) {
+  if (dataPoints.isEmpty) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 16),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 200,
-          child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              barGroups: dataPoints.entries.map((entry) {
-                return BarChartGroupData(
-                  x: entry.key.hashCode,
-                  barRods: [
-                    BarChartRodData(
-                      toY: entry.value,
-                      width: 20,
-                      color: chartColor ?? Colors.deepPurple,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ],
-                  showingTooltipIndicators: [0],
-                );
-              }).toList(),
-              titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (value, _) {
-                      final entry = dataPoints.keys.firstWhere(
-                        (key) => key.hashCode == value.toInt(),
-                        orElse: () => '',
-                      );
-                      return Text(entry,
-                          style: const TextStyle(fontSize: 10),
-                          overflow: TextOverflow.ellipsis);
-                    },
-                  ),
-                ),
-                leftTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: true)),
-                topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              ),
-              borderData: FlBorderData(show: false),
-              gridData: FlGridData(show: false),
-            ),
-          ),
-        ),
+        const SizedBox(height: 24),  // más espacio antes del título
+        Text(title,
+            style:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        const SizedBox(height: 12),
+        const Text('No hay datos para mostrar',
+            style: TextStyle(color: Colors.grey)),
       ],
     );
   }
+
+  final entries = dataPoints.entries.toList();
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 24),  // más espacio antes del título
+      Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+      const SizedBox(height: 20),  // más separación entre título y gráfico
+      SizedBox(
+        height: 200,
+        child: BarChart(
+          BarChartData(
+            alignment: BarChartAlignment.spaceAround,
+            barGroups: entries.asMap().entries.map((entry) {
+              final index = entry.key;
+              final data = entry.value;
+              return BarChartGroupData(
+                x: index,
+                barRods: [
+                  BarChartRodData(
+                    toY: data.value,
+                    width: 20,
+                    color: chartColor ?? Colors.deepPurple,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ],
+                showingTooltipIndicators: [0],
+              );
+            }).toList(),
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, _) {
+                    final index = value.toInt();
+                    if (index < 0 || index >= entries.length) return const SizedBox.shrink();
+                    final entry = entries[index];
+                    return Text(entry.key,
+                        style: const TextStyle(fontSize: 10),
+                        overflow: TextOverflow.ellipsis);
+                  },
+                ),
+              ),
+              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
+            borderData: FlBorderData(show: false),
+            gridData: FlGridData(show: false),
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -202,8 +200,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       );
     }
 
-    final String mesActual = _selectedMonth.first;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Estadísticas')),
       body: Padding(
@@ -219,39 +215,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ),
               _buildInfoCard(
                 label: 'Método de pago más usado',
-                value: _metodoPagoMasUsado?.metodoPago,
+                value: _metodoPagoMasUsado?.metodoPago?.toString() ?? 'Desconocido',
                 subValue:
-                    '${_metodoPagoMasUsado?.totalUsos.toStringAsFixed(1) ?? 0}%',
+                    '${_metodoPagoMasUsado?.totalUsos ?? 0}',
               ),
               const SizedBox(height: 16),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: _meses.map((mes) {
-                  final bool selected = _selectedMonth.contains(mes);
-                  return ChoiceChip(
-                    label: Text(mes,
-                        style: TextStyle(
-                            color: selected ? Colors.white : Colors.black)),
-                    selected: selected,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _selectedMonth = {mes};
-                      });
-                    },
-                    selectedColor: Colors.blue,
-                    backgroundColor: Colors.grey[200],
-                  );
-                }).toList(),
-              ),
               _buildChartSection(
                 title: 'Top 5 De Ventas',
-                dataPoints: _filtrarVentasPorMes(_masVendidosPorMes, mesActual),
+                dataPoints: _filtrarVentasSinFiltro(_masVendidosPorMes),
               ),
               _buildChartSection(
                 title: 'Productos Menos Vendidos',
-                dataPoints:
-                    _filtrarVentasPorMes(_menosVendidosPorMes, mesActual),
+                dataPoints: _filtrarVentasSinFiltro(_menosVendidosPorMes),
                 chartColor: Colors.lightBlue,
               ),
             ],
