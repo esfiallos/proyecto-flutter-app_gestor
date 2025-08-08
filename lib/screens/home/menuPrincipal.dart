@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:miki/screens/ventas/venta_producto_page.dart';
 import 'package:miki/widgets/ProductWidget.dart';
-import 'package:miki/widgets/modal_ventas.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:miki/models/views/stock_productos.dart';
 import 'package:miki/service/super_service.dart';
@@ -27,29 +27,48 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     cargarDatos();
     cargarNombreUsuario();
   }
-Future<void> cargarDatos() async {
-  final balance = await AppService().obtenerBalance();
-  final gastos = await AppService().obtenerGastos();
-  final listaProductos = await AppService().obtenerStockActual();
 
-  double sumaGastos = 0.0;
-  for (var gasto in gastos) {
-    sumaGastos += gasto.cantidad ?? 0;
+  Future<void> cargarDatos() async {
+    final balance = await AppService().obtenerBalance();
+    final gastos = await AppService().obtenerGastos();
+    final listaProductos = await AppService().obtenerStockActual();
+
+    double sumaGastos = 0.0;
+    for (var gasto in gastos) {
+      sumaGastos += gasto.cantidad ?? 0;
+    }
+
+    setState(() {
+      totalBalance = balance.balance;
+      totalGastos = sumaGastos;
+      productos = listaProductos;
+    });
   }
-
-  setState(() {
-    totalBalance = balance.balance;
-    totalGastos = sumaGastos;
-    productos = listaProductos;
-  });
-}
-
 
   Future<void> cargarNombreUsuario() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       nombreUsuario = prefs.getString('nombre') ?? '';
     });
+  }
+
+  void _mostrarModalNuevaVenta() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return NuevaVentaModal(
+          onVentaProductos: () {
+            Navigator.of(dialogContext).pop();
+            Navigator.pushNamed(context, '/venta-productos');
+          },
+          onVentaLibre: () {
+            Navigator.of(dialogContext).pop();
+            Navigator.pushNamed(context, '/venta-libre');
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -83,8 +102,7 @@ Future<void> cargarDatos() async {
             // BODY
             Expanded(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -93,10 +111,10 @@ Future<void> cargarDatos() async {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TotalesWidget(
-                            titulo: 'Total Balance',
+                            titulo: 'Balance',
                             monto: 'Lps ${totalBalance.toStringAsFixed(2)}'),
                         TotalesWidget(
-                            titulo: 'Total Expense',
+                            titulo: 'Total Gastos',
                             monto: '-Lps ${totalGastos.toStringAsFixed(2)}'),
                       ],
                     ),
@@ -105,13 +123,34 @@ Future<void> cargarDatos() async {
                     // PRODUCTOS
                     ...productos.map((p) => ProductoWidget(producto: p)),
 
-
                     const SizedBox(height: 10),
                     const Text('Accesos Rápidos',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
-                    accesosRapidos(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        AccesoRapidoWidget(
+                          imagen: 'assets/venta.png',
+                          texto: 'Registrar\nVenta',
+                          onPressed: _mostrarModalNuevaVenta,
+                        ),
+                        const AccesoRapidoWidget(
+                          imagen: 'assets/gasto.png',
+                          texto: 'Registrar\nGastos',
+                          ruta: '/nuevoGasto',
+                        ),
+                        AccesoRapidoWidget(
+                          imagen: 'assets/inventario.png',
+                          texto: 'Inventario',
+                          onPressed: () async {
+                            await Navigator.pushNamed(context, '/inventario');
+                            await cargarDatos();
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -121,51 +160,4 @@ Future<void> cargarDatos() async {
       ),
     );
   }
-
-
-  Widget accesosRapidos() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: [
-      AccesoRapidoWidget(
-        imagen: 'assets/venta.png',
-        texto: 'Registrar\nVenta',
-        onPressed: () {
-          showDialog(
-            context: context,
-            barrierColor: Colors.transparent,
-            builder: (context) {
-              return NuevaVentaModal(
-                onVentaProductos: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/venta-producto');
-                },
-                onVentaLibre: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/venta-libre');
-                },
-              );
-            },
-          );
-        },
-      ),
-
-      const AccesoRapidoWidget(
-        imagen: 'assets/gasto.png',
-        texto: 'Registrar\nGastos',
-        ruta: '/nuevoGasto',
-      ),
-
-      // ✅ Inventario actualizado
-      AccesoRapidoWidget(
-        imagen: 'assets/inventario.png',
-        texto: 'Inventario',
-        onPressed: () async {
-          await Navigator.pushNamed(context, '/inventario');
-          await cargarDatos(); // ← recarga el stock al volver
-        },
-      ),
-    ],
-  );
-}
 }

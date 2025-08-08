@@ -12,10 +12,13 @@ class VentaLibrePage extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       body: const Center(
-        child: Text(
-          'Aquí puedes registrar un ingreso libre, sin productos del inventario.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Text(
+            'Aquí puedes registrar un ingreso libre, sin productos del inventario.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16),
+          ),
         ),
       ),
     );

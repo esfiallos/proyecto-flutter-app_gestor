@@ -18,6 +18,8 @@ import 'package:miki/screens/profile/My_Products.dart';
 import 'package:miki/screens/profile/edit_profile.dart';
 import 'package:miki/screens/profile/profile.dart';
 import 'package:miki/screens/estadistica/statistics.dart';
+import 'package:miki/screens/ventas/venta_libre_page.dart';
+import 'package:miki/screens/ventas/venta_page.dart';
 
 
 class AppRoutes {
@@ -42,6 +44,8 @@ class AppRoutes {
   static const String logOut = '/log-out';
   static const String nuevoGasto = '/nuevoGasto'; 
   static const String categorias = '/categorias';
+  static const String ventaLibre = '/venta-libre';
+  static const String ventaProductos = '/venta-productos';
 
 
 
@@ -90,6 +94,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const NuevoGasto());
         case categorias:
         return MaterialPageRoute(builder: (_) => const CategoriaManager());
+        case ventaLibre:
+        return MaterialPageRoute(builder: (_) => const VentaLibrePage());
+      case ventaProductos:
+        return MaterialPageRoute(builder: (_) => const VentaProductosPage());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
