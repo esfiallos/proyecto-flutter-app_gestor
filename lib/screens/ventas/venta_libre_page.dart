@@ -43,7 +43,6 @@ class _VentaLibrePageState extends State<VentaLibrePage> {
         idVenta: 0, // Se actualizará después de registrar la venta
         idProducto: productoIngreso.id ?? 0,
         cantidad: 1,
-        precioUnitario: _monto ?? 0, // Aquí guardamos el precio real
       );
 
       // 4️⃣ Guardamos venta y detalle
