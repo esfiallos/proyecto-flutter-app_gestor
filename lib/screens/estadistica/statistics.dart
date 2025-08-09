@@ -14,7 +14,8 @@ import 'package:fl_chart/fl_chart.dart'
         SideTitles,
         FlBorderData,
         FlGridData,
-        BarChartAlignment;
+        BarChartAlignment,
+        BarTouchData;
 import 'package:miki/service/super_service.dart';
 import 'package:miki/widgets/MenuBar.dart';
 
@@ -110,80 +111,92 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Widget _buildChartSection({
-  required String title,
-  required Map<String, double> dataPoints,
-  Color? chartColor,
-}) {
-  if (dataPoints.isEmpty) {
+    required String title,
+    required Map<String, double> dataPoints,
+    Color? chartColor,
+  }) {
+    if (dataPoints.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const SizedBox(height: 12),
+          const Text('No hay datos para mostrar',
+              style: TextStyle(color: Colors.grey)),
+        ],
+      );
+    }
+
+    final entries = dataPoints.entries.toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),  // más espacio antes del título
+        const SizedBox(height: 24),
         Text(title,
-            style:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 12),
-        const Text('No hay datos para mostrar',
-            style: TextStyle(color: Colors.grey)),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        const SizedBox(height: 40), // más espacio entre título y gráfico
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: SizedBox(
+            height: 200,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                barGroups: entries.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final data = entry.value;
+                  return BarChartGroupData(
+                    x: index,
+                    barRods: [
+                      BarChartRodData(
+                        toY: data.value,
+                        width: 20,
+                        color: chartColor ?? Colors.deepPurple,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ],
+                    showingTooltipIndicators: [0],
+                  );
+                }).toList(),
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40, // espacio para etiquetas abajo
+                      getTitlesWidget: (value, _) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= entries.length) return const SizedBox.shrink();
+                        final entry = entries[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(entry.key,
+                              style: const TextStyle(fontSize: 10),
+                              overflow: TextOverflow.ellipsis),
+                        );
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+                  ),
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                borderData: FlBorderData(show: false),
+                gridData: FlGridData(show: false),
+                barTouchData: BarTouchData(enabled: true),
+                maxY: (entries.map((e) => e.value).reduce((a, b) => a > b ? a : b)) * 1.2,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
-
-  final entries = dataPoints.entries.toList();
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const SizedBox(height: 24),  // más espacio antes del título
-      Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-      const SizedBox(height: 20),  // más separación entre título y gráfico
-      SizedBox(
-        height: 200,
-        child: BarChart(
-          BarChartData(
-            alignment: BarChartAlignment.spaceAround,
-            barGroups: entries.asMap().entries.map((entry) {
-              final index = entry.key;
-              final data = entry.value;
-              return BarChartGroupData(
-                x: index,
-                barRods: [
-                  BarChartRodData(
-                    toY: data.value,
-                    width: 20,
-                    color: chartColor ?? Colors.deepPurple,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ],
-                showingTooltipIndicators: [0],
-              );
-            }).toList(),
-            titlesData: FlTitlesData(
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, _) {
-                    final index = value.toInt();
-                    if (index < 0 || index >= entries.length) return const SizedBox.shrink();
-                    final entry = entries[index];
-                    return Text(entry.key,
-                        style: const TextStyle(fontSize: 10),
-                        overflow: TextOverflow.ellipsis);
-                  },
-                ),
-              ),
-              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            ),
-            borderData: FlBorderData(show: false),
-            gridData: FlGridData(show: false),
-          ),
-        ),
-      ),
-    ],
-  );
-}
 
   @override
   Widget build(BuildContext context) {
