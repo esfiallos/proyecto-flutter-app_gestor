@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:miki/models/productos.dart';
 import 'package:miki/models/detalle_venta.dart';
 import 'package:miki/models/venta.dart';
+import 'package:miki/screens/ventas/comporbante_venta.dart';
 import 'package:miki/service/super_service.dart';
 
 class VentaProductosPage extends StatefulWidget {
@@ -13,12 +14,10 @@ class VentaProductosPage extends StatefulWidget {
 
 class _VentaProductosPageState extends State<VentaProductosPage> {
   List<Producto> _productos = [];
-  Map<int, int> _cantidades = {}; // key: idProducto, value: cantidad
+  Map<int, int> _cantidades = {};
   bool _cargando = true;
 
-  // Método de pago seleccionado, por defecto 'Efectivo'
   String _metodoPago = 'Efectivo';
-
   final List<String> _metodosPago = ['Efectivo', 'Tarjeta', 'Transferencia'];
 
   @override
@@ -60,17 +59,16 @@ class _VentaProductosPageState extends State<VentaProductosPage> {
       return;
     }
 
-    // Creamos la venta con método de pago seleccionado
     final venta = Venta(
       tipoVenta: 'productos',
       fecha: DateTime.now().toIso8601String(),
       concepto: 'Venta de productos',
-      metodoPago: _metodoPago, // Aquí asignamos el método
+      metodoPago: _metodoPago,
     );
 
     final detalles = _cantidades.entries.map((e) {
       return DetalleVenta(
-        idVenta: 0, // se asigna al insertar
+        idVenta: 0,
         idProducto: e.key,
         cantidad: e.value,
       );
@@ -78,10 +76,17 @@ class _VentaProductosPageState extends State<VentaProductosPage> {
 
     try {
       await AppService().registrarVentaCompleta(venta, detalles);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Venta registrada correctamente')),
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ComprobanteVentaPage(
+            venta: venta,
+            detalles: detalles,
+            productos: _productos, // 🔹 Enviamos la lista completa
+          ),
+        ),
       );
-      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al guardar venta: $e')),
