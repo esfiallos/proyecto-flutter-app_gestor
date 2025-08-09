@@ -3,6 +3,8 @@ import 'package:miki/models/views/stock_productos.dart';
 import 'package:miki/models/categoria.dart';
 import 'package:miki/service/super_service.dart';
 import 'package:miki/widgets/MenuBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 
 class InventarioPage extends StatefulWidget {
   const InventarioPage({super.key});
@@ -51,6 +53,29 @@ class _InventarioPageState extends State<InventarioPage> {
     );
     if (cat.id == null) return [];
     return _productos.where((p) => p.idCategoria == cat.id).toList();
+  }
+
+  Future<void> _compartirProducto(StockProducto producto) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Guardar datos en SharedPreferences
+    await prefs.setString('producto_nombre', producto.nombre);
+    await prefs.setDouble('producto_precio', producto.precio);
+    await prefs.setInt('producto_stock', producto.stock);
+    await prefs.setString('producto_categoria', _getNombreCategoria(producto.idCategoria));
+
+    // Crear mensaje
+    final mensaje = '''
+📦 PRODUCTO
+
+🛒 Nombre: ${producto.nombre}
+💰 Precio: L${producto.precio.toStringAsFixed(2)}
+📦 Stock: ${producto.stock}
+🏷️ Categoría: ${_getNombreCategoria(producto.idCategoria)}
+''';
+
+    // Abrir selector para compartir
+    Share.share(mensaje);
   }
 
   @override
@@ -148,49 +173,52 @@ class _InventarioPageState extends State<InventarioPage> {
                     itemCount: _productosFiltrados.length,
                     itemBuilder: (context, index) {
                       final producto = _productosFiltrados[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.grey[200],
-                                image: producto.imagen != null && producto.imagen!.isNotEmpty
-                                    ? DecorationImage(
-                                        image: NetworkImage(producto.imagen!),
-                                        fit: BoxFit.cover,
-                                      )
+                      return GestureDetector(
+                        onTap: () => _compartirProducto(producto),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey[200],
+                                  image: producto.imagen != null && producto.imagen!.isNotEmpty
+                                      ? DecorationImage(
+                                          image: NetworkImage(producto.imagen!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: producto.imagen == null || producto.imagen!.isEmpty
+                                    ? const Icon(Icons.image_not_supported, color: Colors.grey, size: 30)
                                     : null,
                               ),
-                              child: producto.imagen == null || producto.imagen!.isEmpty
-                                  ? const Icon(Icons.image_not_supported, color: Colors.grey, size: 30)
-                                  : null,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    producto.nombre,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text('Stock: ${producto.stock}'),
-                                  Text('Precio: L${producto.precio.toStringAsFixed(2)}'),
-                                  Text('Categoría: ${_getNombreCategoria(producto.idCategoria)}'),
-                                ],
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      producto.nombre,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text('Stock: ${producto.stock}'),
+                                    Text('Precio: L${producto.precio.toStringAsFixed(2)}'),
+                                    Text('Categoría: ${_getNombreCategoria(producto.idCategoria)}'),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },
