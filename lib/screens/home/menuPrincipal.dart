@@ -35,7 +35,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
     double sumaGastos = 0.0;
     for (var gasto in gastos) {
-      sumaGastos += gasto.cantidad ?? 0;
+      sumaGastos += gasto.valor ?? 0;
     }
 
     setState(() {
